@@ -7,93 +7,121 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 40px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            padding: 30px;
+            border-radius: 15px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        p {
-            font-size: 1.2rem;
+            text-align: center;
             margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        .status {
-            background: rgba(76, 175, 80, 0.2);
-            border: 1px solid rgba(76, 175, 80, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .endpoints {
-            text-align: left;
-            margin-top: 30px;
+            font-size: 2.5em;
         }
         .endpoint {
             background: rgba(255, 255, 255, 0.1);
-            padding: 10px 15px;
+            padding: 15px;
             margin: 10px 0;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
+            border-left: 4px solid #4CAF50;
         }
         .method {
-            color: #4CAF50;
-            font-weight: bold;
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        .url {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+        .description {
+            margin-top: 8px;
+            opacity: 0.9;
+        }
+        .status {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(76, 175, 80, 0.3);
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚀 Hey API Server</h1>
-        <p>Welcome to the Hey social media platform API server!</p>
         
         <div class="status">
-            <h3>✅ Server Status: Online</h3>
-            <p>The API server is running successfully on Netlify.</p>
+            <h2>✅ Server is Running</h2>
+            <p>API endpoints are available and ready to use!</p>
         </div>
 
-        <div class="endpoints">
-            <h3>Available Endpoints:</h3>
-            <div class="endpoint">
-                <span class="method">GET</span> /health - Health check
-            </div>
-            <div class="endpoint">
-                <span class="method">GET</span> /test - Hello function
-            </div>
-            <div class="endpoint">
-                <span class="method">GET</span> /api/my-function - Custom function
-            </div>
-            <div class="endpoint">
-                <span class="method">GET</span> /api/games - Games API
-            </div>
-            <div class="endpoint">
-                <span class="method">GET</span> /api/users - Users API
-            </div>
+        <h2>Available Endpoints:</h2>
+        
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/health</span>
+            <div class="description">Health check endpoint</div>
         </div>
 
-        <p style="margin-top: 40px; opacity: 0.7;">
-            Built with ❤️ using Hono, TypeScript, and Netlify
-        </p>
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/games</span>
+            <div class="description">Get all games</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/users</span>
+            <div class="description">User management endpoints</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/coins</span>
+            <div class="description">Coin system endpoints</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/tournaments</span>
+            <div class="description">Tournament system endpoints</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/premium</span>
+            <div class="description">Premium features endpoints</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/test</span>
+            <div class="description">Test edge function</div>
+        </div>
+
+        <div class="endpoint">
+            <span class="method">GET</span>
+            <span class="url">/api/my-function</span>
+            <div class="description">Custom edge function</div>
+        </div>
+
+        <div style="margin-top: 40px; text-align: center; opacity: 0.8;">
+            <p>Built with ❤️ using Hono, Prisma, and Netlify</p>
+        </div>
     </div>
 </body>
 </html>

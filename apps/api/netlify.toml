@@ -7,10 +7,15 @@
 [build.environment]
   NODE_VERSION = "20"
 
-[[edge_functions]]
-function = "hello"
-path = "/test"
+[functions]
+  directory = "netlify/functions"
 
-[[edge_functions]]
-function = "my-function"
-path = "/api/my-function"
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
