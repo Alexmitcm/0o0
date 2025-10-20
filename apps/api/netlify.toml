@@ -1,16 +1,9 @@
 
-[build]
-  base = "apps/api"
-  publish = "dist"
-  command = "pnpm build"
 
-[build.environment]
-  NODE_VERSION = "20"
+[[edge_functions]]
+function = "hello"
+path = "/test"
 
-[functions]
-  directory = "netlify/edge-functions"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[[edge_functions]]
+function = "my-function"
+path = "/api/my-function"
