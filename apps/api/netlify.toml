@@ -1,0 +1,14 @@
+
+[build]
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[edge_functions]]
+function = "hello"
+path = "/test"
+
+[[edge_functions]]
+function = "my-function"
+path = "/api/my-function"
