@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .loading { background-color: #fff3cd; border-color: #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>API Endpoints Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Get User Data</h2>
+        <button onclick="testGetUserData()">Test GET /api/coin-system/:walletAddress</button>
+        <div id="userDataResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Update Coins</h2>
+        <button onclick="testUpdateCoins()">Test POST /api/coin-system/update</button>
+        <div id="updateCoinsResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: Check Ban Status</h2>
+        <button onclick="testCheckBan()">Test POST /api/captcha-system/check-ban</button>
+        <div id="checkBanResult"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Validate Token</h2>
+        <button onclick="testValidateToken()">Test POST /api/captcha-system/validate</button>
+        <div id="validateTokenResult"></div>
+    </div>
+
+    <script>
+        const testWalletAddress = "0x1234567890123456789012345678901234567890";
+        
+        function showResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = success ? "success" : "error";
+            element.innerHTML = `
+                <h4>${success ? "✅ Success" : "❌ Error"}</h4>
+                <p>${message}</p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ""}
+            `;
+        }
+        
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.className = "loading";
+            element.innerHTML = `<h4>⏳ Loading...</h4><p>${message}</p>`;
+        }
+        
+        async function testGetUserData() {
+            showLoading("userDataResult", "Testing GET /api/coin-system/:walletAddress");
+            
+            try {
+                const response = await fetch(`http://localhost:8080/api/coin-system/${testWalletAddress}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("userDataResult", true, "User data retrieved successfully", data);
+                } else {
+                    showResult("userDataResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("userDataResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testUpdateCoins() {
+            showLoading("updateCoinsResult", "Testing POST /api/coin-system/update");
+            
+            try {
+                const response = await fetch("http://localhost:8080/api/coin-system/update", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        walletAddress: testWalletAddress,
+                        amount: 10,
+                        coinType: "Experience"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("updateCoinsResult", true, "Coins updated successfully", data);
+                } else {
+                    showResult("updateCoinsResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("updateCoinsResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCheckBan() {
+            showLoading("checkBanResult", "Testing POST /api/captcha-system/check-ban");
+            
+            try {
+                const response = await fetch("http://localhost:8080/api/captcha-system/check-ban", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        walletaddress: testWalletAddress,
+                        token: "test-token-123",
+                        action: "check"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("checkBanResult", true, "Ban status checked successfully", data);
+                } else {
+                    showResult("checkBanResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("checkBanResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testValidateToken() {
+            showLoading("validateTokenResult", "Testing POST /api/captcha-system/validate");
+            
+            try {
+                const formData = new FormData();
+                formData.append("walletaddress", testWalletAddress);
+                formData.append("token", "test-token-123");
+                
+                const response = await fetch("http://localhost:8080/api/captcha-system/validate", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("validateTokenResult", true, "Token validated successfully", data);
+                } else {
+                    showResult("validateTokenResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("validateTokenResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        // Auto-run tests when page loads
+        window.onload = function() {
+            console.log("Page loaded, API tests ready to run");
+        };
+    </script>
+</body>
+</html>

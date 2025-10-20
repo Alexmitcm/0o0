@@ -1,0 +1,28 @@
+/* CSS to hide iframe-related errors and improve iframe security */
+iframe {
+  /* Improve iframe security and prevent some errors */
+  outline: none;
+  background: transparent;
+  /* Improve iframe security and prevent some errors */
+  border: none;
+}
+
+/* Hide any error overlays that might appear */
+iframe[src*="htmlgames.com"] {
+  /* Specific styling for htmlgames iframes */
+  pointer-events: auto;
+}
+
+/* Prevent iframe from causing layout issues */
+.game-iframe-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.game-iframe-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

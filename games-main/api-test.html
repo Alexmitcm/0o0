@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - Games and Endpoints</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .test-section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px; 
+            background: #fafafa; 
+        }
+        .success { 
+            background-color: #d4edda; 
+            border-color: #c3e6cb; 
+            color: #155724; 
+        }
+        .error { 
+            background-color: #f8d7da; 
+            border-color: #f5c6cb; 
+            color: #721c24; 
+        }
+        .loading { 
+            background-color: #fff3cd; 
+            border-color: #ffeaa7; 
+            color: #856404; 
+        }
+        button { 
+            padding: 10px 20px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        pre { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-radius: 3px; 
+            overflow-x: auto; 
+            border: 1px solid #e9ecef; 
+        }
+        .status { 
+            font-weight: bold; 
+            margin: 10px 0; 
+        }
+        .game-link { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #28a745; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 4px; 
+            margin: 5px; 
+        }
+        .game-link:hover { 
+            background: #218838; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 API Test - Games and Endpoints</h1>
+        
+        <div class="test-section">
+            <h2>🚀 Quick Game Access</h2>
+            <p>Direct access to games without API dependency:</p>
+            <a href="./air-command-direct.html" class="game-link">🎯 Air Command (Direct)</a>
+            <a href="./AirCommand/index.html?walletaddress=guest" class="game-link">🎯 Air Command (Raw)</a>
+            <a href="./Backgammon/index.html?walletaddress=guest" class="game-link">🎲 Backgammon</a>
+            <a href="./chess/index.html?walletaddress=guest" class="game-link">♟️ Chess</a>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔧 API Server Status</h2>
+            <button onclick="testApiStatus()">Test API Server Connection</button>
+            <div id="apiStatusResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎮 Game Endpoints</h2>
+            <button onclick="testGameEndpoint()">Test GET /games/air-command</button>
+            <div id="gameEndpointResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>💰 Coin System Endpoints</h2>
+            <button onclick="testCoinSystem()">Test Coin System API</button>
+            <div id="coinSystemResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔒 Captcha System Endpoints</h2>
+            <button onclick="testCaptchaSystem()">Test Captcha System API</button>
+            <div id="captchaSystemResult"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 System Information</h2>
+            <div id="systemInfo">
+                <p><strong>Current URL:</strong> <span id="currentUrl"></span></p>
+                <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+                <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const testWalletAddress = "0x1234567890123456789012345678901234567890";
+        
+        // Update system info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        function showResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = success ? "success" : "error";
+            element.innerHTML = `
+                <div class="status">${success ? "✅ Success" : "❌ Error"}</div>
+                <p>${message}</p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ""}
+            `;
+        }
+        
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.className = "loading";
+            element.innerHTML = `<div class="status">⏳ Loading...</div><p>${message}</p>`;
+        }
+        
+        async function testApiStatus() {
+            showLoading("apiStatusResult", "Testing API server connection...");
+            
+            try {
+                const response = await fetch("http://localhost:8080/", {
+                    method: "GET",
+                    mode: "no-cors" // Avoid CORS issues
+                });
+                
+                showResult("apiStatusResult", true, "API server is responding (connection successful)");
+            } catch (error) {
+                showResult("apiStatusResult", false, `API server connection failed: ${error.message}`);
+            }
+        }
+        
+        async function testGameEndpoint() {
+            showLoading("gameEndpointResult", "Testing GET /games/air-command...");
+            
+            try {
+                const response = await fetch("http://localhost:8080/games/air-command");
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("gameEndpointResult", true, "Game endpoint working correctly", data);
+                } else {
+                    showResult("gameEndpointResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("gameEndpointResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCoinSystem() {
+            showLoading("coinSystemResult", "Testing Coin System API...");
+            
+            try {
+                const response = await fetch(`http://localhost:8080/api/coin-system/${testWalletAddress}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("coinSystemResult", true, "Coin System API working correctly", data);
+                } else {
+                    showResult("coinSystemResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("coinSystemResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCaptchaSystem() {
+            showLoading("captchaSystemResult", "Testing Captcha System API...");
+            
+            try {
+                const response = await fetch("http://localhost:8080/api/captcha-system/check-ban", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        walletaddress: testWalletAddress,
+                        token: "test-token-123",
+                        action: "check"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("captchaSystemResult", true, "Captcha System API working correctly", data);
+                } else {
+                    showResult("captchaSystemResult", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("captchaSystemResult", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        // Auto-run API status test when page loads
+        window.onload = function() {
+            console.log("API Test page loaded");
+            // Don't auto-run tests to avoid CORS issues
+        };
+    </script>
+</body>
+</html>

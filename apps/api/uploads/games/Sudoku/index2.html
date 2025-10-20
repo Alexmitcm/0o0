@@ -1,0 +1,83 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,width=device-width, height=device-height, user-scalable=yes" />
+	</head>
+
+	<body>
+		<script src="hooks.js"></script>
+		<style>
+		body{
+			background-image: url('./images/game_scene.jpg');
+			background-size: 100% 100%;
+			height: 100vh;
+			overflow:hidden;
+			margin: 0;
+			padding:0;
+		}
+		.container{width:100%;position: relative;top: 7%;}
+		.start {
+			width: 120px;
+			height: 32px;
+			margin: 0 auto;
+			position: relative;
+			cursor: pointer;
+			background-image: url('./images/btn-menu.png');
+			background-size: 100% 100%;
+			text-align: center;
+			padding-top: 12px;
+			display: block;
+			color: black;
+			font-weight: bold;
+			text-decoration: navajowhite;
+			font-family: verdana;
+			margin-bottom: 30px;
+		}
+		a:focus { outline: none; }
+
+		*::selection 
+		{
+			background-color:transparent;
+		} 
+		*::-moz-selection
+		{
+			background-color:transparent;
+		}
+		*
+		{        
+			-webkit-user-select: none;
+			-moz-user-select: -moz-none;
+			/*IE10*/
+			-ms-user-select: none;
+			user-select: none;
+
+			/*You just need this if you are only concerned with android and not desktop browsers.*/
+			-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+		}   
+		.logo{margin: 10px auto;width: 100%;max-width:340px;display: block;}
+		.more{
+			bottom: 40px;
+			position: absolute;
+			left: 20px;
+			background-image: url('./images/btn-more.png');
+			height: 48px;
+			width: 48px;
+			background-size: 100% 100%;
+			color: transparent;
+		}
+		</style>
+		<img src="./images/logo.png" class="logo">
+		
+		<div class="container">
+			<a class="start" href="./game.html#45"><script>gradle.text('easy');</script></a>
+			<a class="start" href="./game.html#35"><script>gradle.text('normal');</script></a>
+			<a class="start" href="./game.html#28"><script>gradle.text('expert');</script></a>
+			
+			<br>
+			<a class="start" href="./lang.html"><script>gradle.text('lang');</script></a>
+		</div>
+		
+		<div class="more" onclick="gradle.event('btn_share');">More</div>
+		
+	</body>
+</html>

@@ -1,0 +1,11 @@
+# Exported from Render on 2025-04-29T18:40:50Z
+services:
+  - type: web
+    name: 0xarenaBackend
+    runtime: docker
+    repo: https://github.com/info0xarena/0xarenaBackend
+    plan: free
+    region: oregon
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
+version: "1"

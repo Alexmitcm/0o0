@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Status Checker</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background: #f5f5f5; 
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .status-card { 
+            margin: 20px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            background: #fafafa; 
+        }
+        .success { 
+            background-color: #d4edda; 
+            border-color: #c3e6cb; 
+            color: #155724; 
+        }
+        .error { 
+            background-color: #f8d7da; 
+            border-color: #f5c6cb; 
+            color: #721c24; 
+        }
+        .loading { 
+            background-color: #fff3cd; 
+            border-color: #ffeaa7; 
+            color: #856404; 
+        }
+        .warning {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        button { 
+            padding: 12px 24px; 
+            margin: 5px; 
+            cursor: pointer; 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 14px;
+        }
+        button:hover { 
+            background: #0056b3; 
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        pre { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 4px; 
+            overflow-x: auto; 
+            border: 1px solid #e9ecef; 
+            font-size: 12px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-indicator.online { background-color: #28a745; }
+        .status-indicator.offline { background-color: #dc3545; }
+        .status-indicator.loading { background-color: #ffc107; }
+        .endpoint-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .endpoint-item {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+        }
+        .endpoint-item h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .endpoint-item .method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .method.get { background: #28a745; color: white; }
+        .method.post { background: #007bff; color: white; }
+        .method.put { background: #ffc107; color: black; }
+        .method.delete { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 API Status Checker</h1>
+        <p>Check the status of all API endpoints and services</p>
+        
+        <div class="status-card">
+            <h2>🚀 Quick Actions</h2>
+            <button onclick="checkAllEndpoints()">Check All Endpoints</button>
+            <button onclick="checkApiServer()">Check API Server</button>
+            <button onclick="checkGameEndpoints()">Check Game Endpoints</button>
+            <button onclick="checkCoinSystem()">Check Coin System</button>
+            <button onclick="checkCaptchaSystem()">Check Captcha System</button>
+        </div>
+        
+        <div class="status-card" id="apiServerStatus">
+            <h2>🌐 API Server Status</h2>
+            <div id="apiServerResult">
+                <p>Click "Check API Server" to test connection</p>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2>🎮 Game Endpoints</h2>
+            <div class="endpoint-list">
+                <div class="endpoint-item">
+                    <h4><span class="method get">GET</span>/games/air-command</h4>
+                    <p>Get Air Command game data</p>
+                    <button onclick="testEndpoint('/games/air-command', 'GET')">Test</button>
+                    <div id="result-games-air-command"></div>
+                </div>
+                <div class="endpoint-item">
+                    <h4><span class="method get">GET</span>/games/backgammon</h4>
+                    <p>Get Backgammon game data</p>
+                    <button onclick="testEndpoint('/games/backgammon', 'GET')">Test</button>
+                    <div id="result-games-backgammon"></div>
+                </div>
+                <div class="endpoint-item">
+                    <h4><span class="method get">GET</span>/games/chess</h4>
+                    <p>Get Chess game data</p>
+                    <button onclick="testEndpoint('/games/chess', 'GET')">Test</button>
+                    <div id="result-games-chess"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2>💰 Coin System Endpoints</h2>
+            <div class="endpoint-list">
+                <div class="endpoint-item">
+                    <h4><span class="method get">GET</span>/api/coin-system/:walletAddress</h4>
+                    <p>Get user coin data</p>
+                    <button onclick="testCoinSystemEndpoint()">Test</button>
+                    <div id="result-coin-system-get"></div>
+                </div>
+                <div class="endpoint-item">
+                    <h4><span class="method post">POST</span>/api/coin-system/update</h4>
+                    <p>Update user coins</p>
+                    <button onclick="testCoinSystemUpdate()">Test</button>
+                    <div id="result-coin-system-update"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2>🔒 Captcha System Endpoints</h2>
+            <div class="endpoint-list">
+                <div class="endpoint-item">
+                    <h4><span class="method post">POST</span>/api/captcha-system/check-ban</h4>
+                    <p>Check user ban status</p>
+                    <button onclick="testCaptchaCheckBan()">Test</button>
+                    <div id="result-captcha-check-ban"></div>
+                </div>
+                <div class="endpoint-item">
+                    <h4><span class="method post">POST</span>/api/captcha-system/validate</h4>
+                    <p>Validate token</p>
+                    <button onclick="testCaptchaValidate()">Test</button>
+                    <div id="result-captcha-validate"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2>📊 System Information</h2>
+            <div id="systemInfo">
+                <p><strong>Current URL:</strong> <span id="currentUrl"></span></p>
+                <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+                <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+                <p><strong>API Base URL:</strong> <span id="apiBaseUrl">http://localhost:8080</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "http://localhost:8080";
+        const testWalletAddress = "0x1234567890123456789012345678901234567890";
+        
+        // Update system info
+        document.getElementById('currentUrl').textContent = window.location.href;
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        function showResult(elementId, success, message, data = null) {
+            const element = document.getElementById(elementId);
+            element.className = success ? "success" : "error";
+            element.innerHTML = `
+                <div style="margin: 10px 0;">
+                    <span class="status-indicator ${success ? 'online' : 'offline'}"></span>
+                    <strong>${success ? "✅ Success" : "❌ Error"}</strong>
+                </div>
+                <p>${message}</p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ""}
+            `;
+        }
+        
+        function showLoading(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.className = "loading";
+            element.innerHTML = `
+                <div style="margin: 10px 0;">
+                    <span class="status-indicator loading"></span>
+                    <strong>⏳ Loading...</strong>
+                </div>
+                <p>${message}</p>
+            `;
+        }
+        
+        async function checkApiServer() {
+            showLoading("apiServerResult", "Testing API server connection...");
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/`, {
+                    method: "GET",
+                    mode: "no-cors"
+                });
+                
+                showResult("apiServerResult", true, "API server is responding (connection successful)");
+            } catch (error) {
+                showResult("apiServerResult", false, `API server connection failed: ${error.message}`);
+            }
+        }
+        
+        async function testEndpoint(path, method = 'GET') {
+            const resultId = `result${path.replace(/\//g, '-').replace(/:/g, '')}`;
+            showLoading(resultId, `Testing ${method} ${path}...`);
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}${path}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult(resultId, true, `${method} ${path} working correctly`, data);
+                } else {
+                    showResult(resultId, false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult(resultId, false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCoinSystemEndpoint() {
+            showLoading("result-coin-system-get", "Testing GET /api/coin-system/:walletAddress...");
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/coin-system/${testWalletAddress}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("result-coin-system-get", true, "Coin System GET endpoint working correctly", data);
+                } else {
+                    showResult("result-coin-system-get", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("result-coin-system-get", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCoinSystemUpdate() {
+            showLoading("result-coin-system-update", "Testing POST /api/coin-system/update...");
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/coin-system/update`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        walletAddress: testWalletAddress,
+                        amount: 10,
+                        coinType: "Experience"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("result-coin-system-update", true, "Coin System UPDATE endpoint working correctly", data);
+                } else {
+                    showResult("result-coin-system-update", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("result-coin-system-update", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCaptchaCheckBan() {
+            showLoading("result-captcha-check-ban", "Testing POST /api/captcha-system/check-ban...");
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/captcha-system/check-ban`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        walletaddress: testWalletAddress,
+                        token: "test-token-123",
+                        action: "check"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("result-captcha-check-ban", true, "Captcha System CHECK-BAN endpoint working correctly", data);
+                } else {
+                    showResult("result-captcha-check-ban", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("result-captcha-check-ban", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function testCaptchaValidate() {
+            showLoading("result-captcha-validate", "Testing POST /api/captcha-system/validate...");
+            
+            try {
+                const formData = new FormData();
+                formData.append("walletaddress", testWalletAddress);
+                formData.append("token", "test-token-123");
+                
+                const response = await fetch(`${API_BASE_URL}/api/captcha-system/validate`, {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult("result-captcha-validate", true, "Captcha System VALIDATE endpoint working correctly", data);
+                } else {
+                    showResult("result-captcha-validate", false, `HTTP ${response.status}: ${data.error || "Unknown error"}`, data);
+                }
+            } catch (error) {
+                showResult("result-captcha-validate", false, `Network error: ${error.message}`);
+            }
+        }
+        
+        async function checkAllEndpoints() {
+            await checkApiServer();
+            await testEndpoint('/games/air-command', 'GET');
+            await testCoinSystemEndpoint();
+            await testCaptchaCheckBan();
+        }
+        
+        async function checkGameEndpoints() {
+            await testEndpoint('/games/air-command', 'GET');
+            await testEndpoint('/games/backgammon', 'GET');
+            await testEndpoint('/games/chess', 'GET');
+        }
+        
+        async function checkCoinSystem() {
+            await testCoinSystemEndpoint();
+            await testCoinSystemUpdate();
+        }
+        
+        async function checkCaptchaSystem() {
+            await testCaptchaCheckBan();
+            await testCaptchaValidate();
+        }
+        
+        // Auto-run API server check when page loads
+        window.onload = function() {
+            console.log("API Status Checker loaded");
+            // Don't auto-run tests to avoid CORS issues
+        };
+    </script>
+</body>
+</html>

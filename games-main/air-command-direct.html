@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Command - Direct Access</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-header {
+            background: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .game-iframe {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>Air Command</h1>
+            <p>Direct Game Access - No API Required</p>
+        </div>
+        <iframe 
+            class="game-iframe"
+            src="./AirCommand/index.html?walletaddress=guest"
+            title="Air Command Game"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <script>
+        // Add wallet address parameter if not present
+        const urlParams = new URLSearchParams(window.location.search);
+        const walletAddress = urlParams.get('walletaddress') || 'guest';
+        
+        // Update iframe src with wallet address
+        const iframe = document.querySelector('.game-iframe');
+        if (iframe) {
+            const currentSrc = iframe.src;
+            if (!currentSrc.includes('walletaddress=')) {
+                const separator = currentSrc.includes('?') ? '&' : '?';
+                iframe.src = `${currentSrc}${separator}walletaddress=${walletAddress}`;
+            }
+        }
+
+        // Handle iframe load events
+        iframe.onload = function() {
+            console.log('Game loaded successfully');
+        };
+
+        iframe.onerror = function() {
+            console.error('Failed to load game');
+            document.body.innerHTML = `
+                <div class="loading">
+                    <div>
+                        <h2>Game Loading Error</h2>
+                        <p>Failed to load Air Command game.</p>
+                        <p>Please check if the game files are available.</p>
+                        <button onclick="location.reload()">Retry</button>
+                    </div>
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>

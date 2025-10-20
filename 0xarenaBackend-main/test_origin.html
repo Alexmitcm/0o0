@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Origin Headers</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      h1,
+      h2 {
+        color: #333;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 10px 0;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      pre {
+        background-color: #f5f5f5;
+        padding: 15px;
+        border-radius: 5px;
+        color: #000;
+        overflow-x: auto;
+        white-space: pre-wrap;
+      }
+      #responseContainer {
+        margin-top: 20px;
+        border: 1px solid #ddd;
+        color: #000;
+        padding: 15px;
+        border-radius: 5px;
+      }
+      .loading {
+        color: #666;
+        font-style: italic;
+      }
+      .error {
+        color: #d9534f;
+      }
+      .info-box {
+        background-color: #e7f3fe;
+        color: #000;
+        border-left: 6px solid #2196f3;
+        padding: 10px;
+        margin: 15px 0;
+      }
+      .method-selector {
+        margin: 15px 0;
+      }
+      .method-selector label {
+        margin-right: 15px;
+      }
+      #corsUrl {
+        width: 100%;
+        padding: 8px;
+        margin: 10px 0;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Origin Header Tester</h1>
+
+    <div class="info-box">
+      <p>
+        This page will make requests to your index.php file to show how browsers
+        set the Origin header. The results will help you understand how CORS
+        works in a real browser environment.
+      </p>
+    </div>
+
+    <div>
+      <h2>Configure Request</h2>
+      <div>
+        <label for="corsUrl">URL to your index.php file:</label>
+        <input
+          type="text"
+          id="corsUrl"
+          value="https://zeroxarenabackend.onrender.com/index.php"
+          placeholder="https://your-server.com/index.php"
+        />
+      </div>
+
+      <div class="method-selector">
+        <label>Request Method:</label>
+        <label
+          ><input type="radio" name="method" value="GET" checked /> GET</label
+        >
+        <label><input type="radio" name="method" value="POST" /> POST</label>
+        <label
+          ><input type="radio" name="method" value="OPTIONS" /> OPTIONS
+          (Preflight)</label
+        >
+      </div>
+
+      <button id="sendRequest">Send Request</button>
+      <button id="sendFetchRequest">Send Fetch Request</button>
+      <button id="sendXhrRequest">Send XHR Request</button>
+    </div>
+
+    <div id="responseContainer">
+      <h2>Response</h2>
+      <p>The response will appear here after you send a request.</p>
+    </div>
+
+    <script>
+      document
+        .getElementById("sendRequest")
+        .addEventListener("click", function () {
+          sendRequestToServer("auto");
+        });
+
+      document
+        .getElementById("sendFetchRequest")
+        .addEventListener("click", function () {
+          sendRequestToServer("fetch");
+        });
+
+      document
+        .getElementById("sendXhrRequest")
+        .addEventListener("click", function () {
+          sendRequestToServer("xhr");
+        });
+
+      function sendRequestToServer(method) {
+        const url = document.getElementById("corsUrl").value;
+        const requestMethod = document.querySelector(
+          'input[name="method"]:checked'
+        ).value;
+        const responseContainer = document.getElementById("responseContainer");
+
+        responseContainer.innerHTML =
+          '<h2>Response</h2><p class="loading">Loading...</p>';
+
+        if (method === "fetch" || method === "auto") {
+          // Using Fetch API
+          fetch(url, {
+            method: requestMethod,
+            headers: {
+              "Content-Type": "application/json",
+              // Custom header to trigger preflight if needed
+              "X-Custom-Header": "testing-cors",
+            },
+            // For POST requests, include a body
+            ...(requestMethod === "POST" && {
+              body: JSON.stringify({ test: "data" }),
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              return response.text();
+            })
+            .then((data) => {
+              responseContainer.innerHTML = `
+                        <h2>Response (Fetch API)</h2>
+                        <h3>Browser Details:</h3>
+                        <pre>User Agent: ${navigator.userAgent}</pre>
+                        <pre>Origin: ${window.location.origin}</pre>
+                        <h3>Response Content:</h3>
+                        <div>${data}</div>
+                    `;
+            })
+            .catch((error) => {
+              responseContainer.innerHTML = `
+                        <h2>Response (Fetch API)</h2>
+                        <p class="error">Error: ${error.message}</p>
+                        <p>This might be due to CORS restrictions. Check your browser console for details.</p>
+                        <h3>Browser Details:</h3>
+                        <pre>User Agent: ${navigator.userAgent}</pre>
+                        <pre>Origin: ${window.location.origin}</pre>
+                    `;
+              console.error("Fetch error:", error);
+            });
+        } else if (method === "xhr") {
+          // Using XMLHttpRequest (older method)
+          const xhr = new XMLHttpRequest();
+          xhr.open(requestMethod, url);
+
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              responseContainer.innerHTML = `
+                            <h2>Response (XMLHttpRequest)</h2>
+                            <h3>Browser Details:</h3>
+                            <pre>User Agent: ${navigator.userAgent}</pre>
+                            <pre>Origin: ${window.location.origin}</pre>
+                            <h3>Response Content:</h3>
+                            <div>${xhr.responseText}</div>
+                        `;
+            } else {
+              responseContainer.innerHTML = `
+                            <h2>Response (XMLHttpRequest)</h2>
+                            <p class="error">Error: ${xhr.status} ${xhr.statusText}</p>
+                            <h3>Browser Details:</h3>
+                            <pre>User Agent: ${navigator.userAgent}</pre>
+                            <pre>Origin: ${window.location.origin}</pre>
+                        `;
+            }
+          };
+
+          xhr.onerror = function () {
+            responseContainer.innerHTML = `
+                        <h2>Response (XMLHttpRequest)</h2>
+                        <p class="error">Network error occurred. This might be due to CORS restrictions.</p>
+                        <p>Check your browser console for details.</p>
+                        <h3>Browser Details:</h3>
+                        <pre>User Agent: ${navigator.userAgent}</pre>
+                        <pre>Origin: ${window.location.origin}</pre>
+                    `;
+            console.error("XHR error:", xhr);
+          };
+
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.setRequestHeader("X-Custom-Header", "testing-cors");
+
+          if (requestMethod === "POST") {
+            xhr.send(JSON.stringify({ test: "data" }));
+          } else {
+            xhr.send();
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

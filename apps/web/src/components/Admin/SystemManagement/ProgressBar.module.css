@@ -1,0 +1,326 @@
+.progressBar {
+  width: 0%;
+  height: 100%;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.progressBar0 {
+  width: 0%;
+}
+.progressBar1 {
+  width: 1%;
+}
+.progressBar2 {
+  width: 2%;
+}
+.progressBar3 {
+  width: 3%;
+}
+.progressBar4 {
+  width: 4%;
+}
+.progressBar5 {
+  width: 5%;
+}
+.progressBar6 {
+  width: 6%;
+}
+.progressBar7 {
+  width: 7%;
+}
+.progressBar8 {
+  width: 8%;
+}
+.progressBar9 {
+  width: 9%;
+}
+.progressBar10 {
+  width: 10%;
+}
+.progressBar11 {
+  width: 11%;
+}
+.progressBar12 {
+  width: 12%;
+}
+.progressBar13 {
+  width: 13%;
+}
+.progressBar14 {
+  width: 14%;
+}
+.progressBar15 {
+  width: 15%;
+}
+.progressBar16 {
+  width: 16%;
+}
+.progressBar17 {
+  width: 17%;
+}
+.progressBar18 {
+  width: 18%;
+}
+.progressBar19 {
+  width: 19%;
+}
+.progressBar20 {
+  width: 20%;
+}
+.progressBar21 {
+  width: 21%;
+}
+.progressBar22 {
+  width: 22%;
+}
+.progressBar23 {
+  width: 23%;
+}
+.progressBar24 {
+  width: 24%;
+}
+.progressBar25 {
+  width: 25%;
+}
+.progressBar26 {
+  width: 26%;
+}
+.progressBar27 {
+  width: 27%;
+}
+.progressBar28 {
+  width: 28%;
+}
+.progressBar29 {
+  width: 29%;
+}
+.progressBar30 {
+  width: 30%;
+}
+.progressBar31 {
+  width: 31%;
+}
+.progressBar32 {
+  width: 32%;
+}
+.progressBar33 {
+  width: 33%;
+}
+.progressBar34 {
+  width: 34%;
+}
+.progressBar35 {
+  width: 35%;
+}
+.progressBar36 {
+  width: 36%;
+}
+.progressBar37 {
+  width: 37%;
+}
+.progressBar38 {
+  width: 38%;
+}
+.progressBar39 {
+  width: 39%;
+}
+.progressBar40 {
+  width: 40%;
+}
+.progressBar41 {
+  width: 41%;
+}
+.progressBar42 {
+  width: 42%;
+}
+.progressBar43 {
+  width: 43%;
+}
+.progressBar44 {
+  width: 44%;
+}
+.progressBar45 {
+  width: 45%;
+}
+.progressBar46 {
+  width: 46%;
+}
+.progressBar47 {
+  width: 47%;
+}
+.progressBar48 {
+  width: 48%;
+}
+.progressBar49 {
+  width: 49%;
+}
+.progressBar50 {
+  width: 50%;
+}
+.progressBar51 {
+  width: 51%;
+}
+.progressBar52 {
+  width: 52%;
+}
+.progressBar53 {
+  width: 53%;
+}
+.progressBar54 {
+  width: 54%;
+}
+.progressBar55 {
+  width: 55%;
+}
+.progressBar56 {
+  width: 56%;
+}
+.progressBar57 {
+  width: 57%;
+}
+.progressBar58 {
+  width: 58%;
+}
+.progressBar59 {
+  width: 59%;
+}
+.progressBar60 {
+  width: 60%;
+}
+.progressBar61 {
+  width: 61%;
+}
+.progressBar62 {
+  width: 62%;
+}
+.progressBar63 {
+  width: 63%;
+}
+.progressBar64 {
+  width: 64%;
+}
+.progressBar65 {
+  width: 65%;
+}
+.progressBar66 {
+  width: 66%;
+}
+.progressBar67 {
+  width: 67%;
+}
+.progressBar68 {
+  width: 68%;
+}
+.progressBar69 {
+  width: 69%;
+}
+.progressBar70 {
+  width: 70%;
+}
+.progressBar71 {
+  width: 71%;
+}
+.progressBar72 {
+  width: 72%;
+}
+.progressBar73 {
+  width: 73%;
+}
+.progressBar74 {
+  width: 74%;
+}
+.progressBar75 {
+  width: 75%;
+}
+.progressBar76 {
+  width: 76%;
+}
+.progressBar77 {
+  width: 77%;
+}
+.progressBar78 {
+  width: 78%;
+}
+.progressBar79 {
+  width: 79%;
+}
+.progressBar80 {
+  width: 80%;
+}
+.progressBar81 {
+  width: 81%;
+}
+.progressBar82 {
+  width: 82%;
+}
+.progressBar83 {
+  width: 83%;
+}
+.progressBar84 {
+  width: 84%;
+}
+.progressBar85 {
+  width: 85%;
+}
+.progressBar86 {
+  width: 86%;
+}
+.progressBar87 {
+  width: 87%;
+}
+.progressBar88 {
+  width: 88%;
+}
+.progressBar89 {
+  width: 89%;
+}
+.progressBar90 {
+  width: 90%;
+}
+.progressBar91 {
+  width: 91%;
+}
+.progressBar92 {
+  width: 92%;
+}
+.progressBar93 {
+  width: 93%;
+}
+.progressBar94 {
+  width: 94%;
+}
+.progressBar95 {
+  width: 95%;
+}
+.progressBar96 {
+  width: 96%;
+}
+.progressBar97 {
+  width: 97%;
+}
+.progressBar98 {
+  width: 98%;
+}
+.progressBar99 {
+  width: 99%;
+}
+.progressBar100 {
+  width: 100%;
+}
+
+.progressBarRed {
+  background-color: #ef4444;
+}
+
+.progressBarBlue {
+  background-color: #3b82f6;
+}
+
+.progressBarGreen {
+  background-color: #10b981;
+}
+
+.progressBarGray {
+  background-color: #6b7280;
+}

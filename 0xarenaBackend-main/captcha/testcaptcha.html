@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Captcha Validation</title>
+    <style>
+      /* Ensure the entire screen is used */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: Arial, sans-serif;
+        background-color: #f7f9fc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Full-screen container */
+      .captcha-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f7f9fc;
+      }
+
+      /* Form styling */
+      .captcha-form {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        text-align: center;
+        width: 300px;
+        opacity: 1;
+        transition: opacity 2s ease-out;
+        margin-right: 47px;
+        margin-left: 20px;
+      }
+
+      .captcha-form h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .captcha-form p {
+        font-size: 18px;
+        margin-bottom: 20px;
+        color: #0070ff;
+      }
+
+      .captcha-form input {
+        width: 80%;
+        padding: 10px;
+        font-size: 16px;
+        margin-bottom: 20px;
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        outline: none;
+      }
+
+      .captcha-form input:focus {
+        border-color: #007bff;
+      }
+
+      .captcha-form button {
+        width: 88%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #ffffff;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .captcha-form button:hover {
+        background-color: #0056b3;
+      }
+
+      /* Success message in green */
+      .success-message {
+        margin-top: 20px;
+        color: #28a745 !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+      }
+
+      /* Error message in red */
+      .error-message {
+        margin-top: 20px;
+        color: #ff4d4f;
+        font-size: 16px;
+      }
+
+      /* Hidden state (after animation) */
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Full-screen captcha container -->
+    <div class="captcha-container">
+      <form id="captcha-form" class="captcha-form">
+        <h1>CAPTCHA Validation</h1>
+        <p id="captcha-question">Loading CAPTCHA...</p>
+        <input
+          type="number"
+          id="captcha-answer"
+          placeholder="Enter your answer"
+          required
+        />
+        <button type="submit">Submit</button>
+        <p id="result-message"></p>
+      </form>
+    </div>
+
+    <script>
+      // Function to fetch the CAPTCHA question
+      function fetchCaptcha() {
+        fetch("captcha_api.php")
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.error) {
+              // Display wait message but keep the form visible
+              document.getElementById("captcha-question").textContent =
+                data.error;
+              document.getElementById("captcha-answer").disabled = true;
+              document.getElementById("captcha-answer").placeholder =
+                "Please wait...";
+              document.getElementById("result-message").textContent = "";
+            } else {
+              // Display new CAPTCHA and enable input
+              document.getElementById("captcha-question").textContent =
+                data.captcha;
+              document.getElementById("captcha-answer").disabled = false;
+              document.getElementById("captcha-answer").value = "";
+              document.getElementById("captcha-answer").placeholder =
+                "Enter your answer";
+              document.getElementById("result-message").textContent = "";
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching CAPTCHA:", error);
+            document.getElementById("captcha-question").textContent =
+              "Error loading CAPTCHA.";
+          });
+      }
+
+      // Call fetchCaptcha on page load
+      window.onload = fetchCaptcha;
+
+      // Handle form submission to validate the CAPTCHA
+      document
+        .getElementById("captcha-form")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const answer = document.getElementById("captcha-answer").value;
+
+          // Send the answer to the API via POST
+          fetch("captcha_api.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `answer=${answer}`,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              const resultMessage = document.getElementById("result-message");
+
+              // If the answer is correct
+              if (data.success) {
+                resultMessage.textContent = "Captcha validation passed!";
+                resultMessage.className = "success-message";
+
+                // Fade out the form with ease-out transition
+                const form = document.getElementById("captcha-form");
+                form.style.opacity = 0;
+
+                // After the fade-out animation, set display: none
+                setTimeout(() => {
+                  form.classList.add("hidden");
+                }, 2000); // 500ms matches the transition duration
+              } else {
+                // If the answer is incorrect or user needs to wait
+                resultMessage.textContent = data.message;
+                resultMessage.className = "error-message";
+
+                // If user needs to wait, disable the answer input
+                if (data.error) {
+                  document.getElementById("captcha-answer").disabled = true;
+                  document.getElementById("captcha-answer").placeholder =
+                    "Please wait...";
+                }
+              }
+            })
+            .catch((error) => {
+              console.error("Error submitting CAPTCHA:", error);
+              document.getElementById("result-message").textContent =
+                "Error submitting your answer.";
+              document.getElementById("result-message").className =
+                "error-message";
+            });
+        });
+    </script>
+  </body>
+</html>

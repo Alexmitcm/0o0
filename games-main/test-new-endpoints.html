@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test New API Endpoints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test New API Endpoints</h1>
+    
+    <div class="test-section">
+        <h2>📊 Coin System Endpoints</h2>
+        <button class="test-button" onclick="testGetUserData()">Test Get User Data</button>
+        <button class="test-button" onclick="testUpdateCoins()">Test Update Coins</button>
+        <div id="coin-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔒 Captcha System Endpoints</h2>
+        <button class="test-button" onclick="testValidateToken()">Test Validate Token</button>
+        <button class="test-button" onclick="testCheckBan()">Test Check Ban</button>
+        <button class="test-button" onclick="testUpdateBan()">Test Update Ban</button>
+        <div id="captcha-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎮 Game Endpoints</h2>
+        <button class="test-button" onclick="testGetGame()">Test Get Game (air-command)</button>
+        <button class="test-button" onclick="testGetGames()">Test Get Games List</button>
+        <div id="game-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📈 System Status</h2>
+        <button class="test-button" onclick="testSystemHealth()">Test System Health</button>
+        <div id="system-results" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        const TEST_WALLET = '0x1234567890123456789012345678901234567890';
+        const TEST_TOKEN = 'test-token-12345';
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+        }
+
+        async function testGetUserData() {
+            try {
+                showResult('coin-results', 'Testing Get User Data...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/coin-system/${TEST_WALLET}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('coin-results', `✅ Get User Data Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('coin-results', `❌ Get User Data Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('coin-results', `❌ Get User Data Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testUpdateCoins() {
+            try {
+                showResult('coin-results', 'Testing Update Coins...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/coin-system/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        walletAddress: TEST_WALLET,
+                        amount: 10,
+                        coinType: 'Experience'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('coin-results', `✅ Update Coins Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('coin-results', `❌ Update Coins Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('coin-results', `❌ Update Coins Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testValidateToken() {
+            try {
+                showResult('captcha-results', 'Testing Validate Token...', 'info');
+                
+                const formData = new FormData();
+                formData.append('walletaddress', TEST_WALLET);
+                formData.append('token', TEST_TOKEN);
+                
+                const response = await fetch(`${API_BASE}/api/captcha-system/validate`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('captcha-results', `✅ Validate Token Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('captcha-results', `❌ Validate Token Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('captcha-results', `❌ Validate Token Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testCheckBan() {
+            try {
+                showResult('captcha-results', 'Testing Check Ban...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/captcha-system/check-ban`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        walletaddress: TEST_WALLET,
+                        token: TEST_TOKEN,
+                        action: 'check'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('captcha-results', `✅ Check Ban Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('captcha-results', `❌ Check Ban Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('captcha-results', `❌ Check Ban Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testUpdateBan() {
+            try {
+                showResult('captcha-results', 'Testing Update Ban...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/captcha-system/update-ban`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        walletaddress: TEST_WALLET,
+                        token: TEST_TOKEN,
+                        isBanned: false
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('captcha-results', `✅ Update Ban Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('captcha-results', `❌ Update Ban Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('captcha-results', `❌ Update Ban Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testGetGame() {
+            try {
+                showResult('game-results', 'Testing Get Game...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/games/air-command`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('game-results', `✅ Get Game Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('game-results', `❌ Get Game Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('game-results', `❌ Get Game Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testGetGames() {
+            try {
+                showResult('game-results', 'Testing Get Games List...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/games?limit=5`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('game-results', `✅ Get Games Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('game-results', `❌ Get Games Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('game-results', `❌ Get Games Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        async function testSystemHealth() {
+            try {
+                showResult('system-results', 'Testing System Health...', 'info');
+                
+                const response = await fetch(`${API_BASE}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('system-results', `✅ System Health Success:\n${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    showResult('system-results', `❌ System Health Error:\n${JSON.stringify(data, null, 2)}`, 'error');
+                }
+            } catch (error) {
+                showResult('system-results', `❌ System Health Exception:\n${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            showResult('system-results', '🚀 Ready to test endpoints! Click the buttons above to test each endpoint.', 'info');
+        });
+    </script>
+</body>
+</html>

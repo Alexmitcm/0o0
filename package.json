@@ -1,0 +1,45 @@
+{
+  "name": "hey",
+  "version": "0.0.0",
+  "private": true,
+  "license": "AGPL-3.0",
+  "scripts": {
+    "biome:check": "biome check apps packages script",
+    "biome:fix": "biome check --write apps packages script",
+    "build": "pnpm --recursive --parallel run build",
+    "build:web": "pnpm -F @hey/web build",
+    "typecheck:web": "pnpm -F @hey/web typecheck",
+    "codegen": "pnpm --recursive --parallel run codegen",
+    "dep:check": "pnpm dlx sherif@latest",
+    "dep:fix": "pnpm dlx sherif@latest --fix",
+    "dev": "pnpm --recursive --parallel run dev",
+    "prepare": "husky install",
+    "start": "pnpm --recursive --parallel run start",
+    "test": "pnpm --recursive --parallel run test",
+    "test:fast": "pnpm --recursive --parallel run test --reporter=basic --run",
+    "test:changed": "pnpm --recursive --parallel run test --changed --run",
+    "test:unit": "pnpm --filter='@hey/api' --filter='@hey/helpers' --filter='@hey/indexer' run test --run",
+    "test:web": "pnpm --filter='@hey/web' run test --run",
+    "typecheck": "pnpm --recursive --parallel run typecheck"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
+    "husky": "^9.1.7",
+    "jspdf": "^3.0.1",
+    "supabase": "^2.33.7",
+    "unzip-stream": "^0.3.4"
+  },
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=18.x <=22.x"
+  },
+  "pnpm": {
+    "overrides": {
+      "ox": "0.9.6"
+    },
+    "ignoredBuiltDependencies": [
+      "@prisma/client",
+      "prisma"
+    ]
+  }
+}

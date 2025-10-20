@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="css/style.css"
+      media="screen"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="css/animate.css"
+      media="screen"
+      type="text/css"
+    />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,width=device-width, height=device-height, target-densitydpi=device-dpi, user-scalable=yes"
+    />
+    <style>
+      *::selection {
+        background-color: transparent;
+      }
+      *::-moz-selection {
+        background-color: transparent;
+      }
+      * {
+        -webkit-user-select: none;
+        -moz-user-select: -moz-none;
+        /*IE10*/
+        -ms-user-select: none;
+        user-select: none;
+
+        /*You just need this if you are only concerned with android and not desktop browsers.*/
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="/games-main/helper3-fixed.js"></script>
+    <script src="/games-main/google-analytics2-fixed.js"></script>
+    <h1 id="game_name">SUDOKU</h1>
+    <div id="gradle_sudoku" style="width: 100%; height: 76vh">
+      <div class="sudoku_board" style="width: 98%"></div>
+    </div>
+
+    <script src="lib/jquery.min.js"></script>
+
+    <script src="game.js"></script>
+    <script src="hooks.js"></script>
+  </body>
+</html>

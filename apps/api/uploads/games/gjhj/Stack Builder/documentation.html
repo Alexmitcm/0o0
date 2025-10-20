@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Documentation</title>
+	<link href="https://fonts.googleapis.com/css2?family=Mali&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+	<style type="text/css">
+		body {
+			font-family: 'Roboto', sans-serif;
+		}
+		.bold {
+			font-weight: 700;
+		}
+		.container {
+			max-width: 1200px;
+			margin-right: auto;
+			margin-left: auto;
+		}
+		hr {
+		    border-top: 1 px solid rgba(16, 85, 96, 0.1);
+		}
+		.divider {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+		.section {
+			border-bottom: 1px solid rgba(0,0,0,.1);
+			padding-bottom: 30px;
+			margin-bottom: 30px;
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="content">
+		<div class="section">
+			<h1 class="bold">Documentation</h1>
+		</div>
+		<div class="section">
+			<h2>Installation</h2>
+			<p>
+				Actually there is no installation proccess for HTML5 content, you can just double-click .html file to open it.<br>
+				But there are a restriction for local HTML file, browser can't load local files, so this restriction causing all game assets like images and sounds can't be loaded and shown.
+			</p>
+			<p>
+				You can fix it by opening the game (html) with localserver.<br>
+				Local server apps: Laragon, NodeJS, USBWebserver (Light weight) and there are many other similar software.
+			</p>
+			<p>If you upload the game files on live webserver (Your website), it should run fine without any technical issues.</p>
+		</div>
+		<div class="section">
+			<h2>Item Structure</h2>
+			<p>As you see, there is 2 main folder inside item file, "cloudarcade" and "html5" folder.</p>
+			<p>
+				<strong>cloudarcade</strong> folder mean, the game inside this folder is suitable for CloudArcade CMS or this game version is already integrated with CloudArcade API.
+			</p>
+			<p>
+				<strong>html5</strong> folder mean, is a clean HTML5 version of the game, this version is not contain any external API. This is not game source, the game source have .c3p file extension or also called Construct 3 project.
+			</p>
+			<p>
+				You need active Construct 3 subscription to be able to edit game source (c3p).
+			</p>
+		</div>
+		<div class="section">
+			<h1 style="text-align: center; font-style: italic;">Thanks for your purchase!</h1>
+		</div>
+	</div>
+</div>
+</body>
+</html>

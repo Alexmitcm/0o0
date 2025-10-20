@@ -1,0 +1,13 @@
+/* LoadingState component styles */
+
+.loadingDot {
+  animation-delay: 0s;
+}
+
+.loadingDotDelay1 {
+  animation-delay: 0.1s;
+}
+
+.loadingDotDelay2 {
+  animation-delay: 0.2s;
+}

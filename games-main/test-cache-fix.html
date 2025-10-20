@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Fix Test - New API Endpoints</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Cache Fix Test - New API Endpoints</h1>
+    
+    <div class="test-section">
+        <h2>📋 Instructions</h2>
+        <div class="warning">
+            <strong>Important:</strong> This page tests the new API endpoints to ensure they work correctly.
+            <br><br>
+            <strong>Steps to fix cache issues:</strong>
+            <br>1. Open Developer Tools (F12)
+            <br>2. Go to Network tab
+            <br>3. Check "Disable cache" option
+            <br>4. Hard refresh the page (Ctrl+Shift+R)
+            <br>5. Test the endpoints below
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🧪 Test New Helper3.js</h2>
+        <button class="test-button" onclick="testHelper3()">Test Helper3 Functions</button>
+        <div id="helper3-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Test New Google Analytics2.js</h2>
+        <button class="test-button" onclick="testGoogleAnalytics()">Test Google Analytics Functions</button>
+        <div id="analytics-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎮 Test Game Integration</h2>
+        <button class="test-button" onclick="testGameIntegration()">Test Game Integration</button>
+        <div id="game-results" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Load New Scripts</h2>
+        <button class="test-button" onclick="loadNewScripts()">Load New Scripts (v2)</button>
+        <div id="script-results" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        const TEST_WALLET = '0x1234567890123456789012345678901234567890';
+
+        function showResult(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+        }
+
+        function testHelper3() {
+            try {
+                showResult('helper3-results', 'Testing Helper3 functions...', 'info');
+                
+                // Test if helper3 functions are available
+                if (typeof window.fetchUserData === 'function') {
+                    showResult('helper3-results', '✅ Helper3 functions are available!\n- fetchUserData: ' + typeof window.fetchUserData + '\n- updateCoins: ' + typeof window.updateCoins + '\n- validateToken: ' + typeof window.validateToken, 'success');
+                } else {
+                    showResult('helper3-results', '❌ Helper3 functions not found. Please load the new script.', 'error');
+                }
+            } catch (error) {
+                showResult('helper3-results', `❌ Helper3 test error: ${error.message}`, 'error');
+            }
+        }
+
+        function testGoogleAnalytics() {
+            try {
+                showResult('analytics-results', 'Testing Google Analytics functions...', 'info');
+                
+                // Test if google analytics functions are available
+                if (typeof window.checkUserBan === 'function') {
+                    showResult('analytics-results', '✅ Google Analytics functions are available!\n- checkUserBan: ' + typeof window.checkUserBan + '\n- setBanStatus: ' + typeof window.setBanStatus + '\n- showCaptcha: ' + typeof window.showCaptcha, 'success');
+                } else {
+                    showResult('analytics-results', '❌ Google Analytics functions not found. Please load the new script.', 'error');
+                }
+            } catch (error) {
+                showResult('analytics-results', `❌ Google Analytics test error: ${error.message}`, 'error');
+            }
+        }
+
+        function testGameIntegration() {
+            try {
+                showResult('game-results', 'Testing game integration...', 'info');
+                
+                // Test API endpoints
+                fetch(`${API_BASE}/api/coin-system/${TEST_WALLET}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showResult('game-results', `✅ Game integration test successful!\nAPI Response: ${JSON.stringify(data, null, 2)}`, 'success');
+                    })
+                    .catch(error => {
+                        showResult('game-results', `❌ Game integration test failed: ${error.message}`, 'error');
+                    });
+            } catch (error) {
+                showResult('game-results', `❌ Game integration test error: ${error.message}`, 'error');
+            }
+        }
+
+        function loadNewScripts() {
+            try {
+                showResult('script-results', 'Loading new scripts...', 'info');
+                
+                // Load new helper3 script
+                const helper3Script = document.createElement('script');
+                helper3Script.src = 'helper3-v2.js';
+                helper3Script.onload = () => {
+                    console.log('Helper3 v2 loaded successfully');
+                };
+                helper3Script.onerror = () => {
+                    console.error('Failed to load Helper3 v2');
+                };
+                document.head.appendChild(helper3Script);
+
+                // Load new google analytics script
+                const analyticsScript = document.createElement('script');
+                analyticsScript.src = 'google-analytics2-v2.js';
+                analyticsScript.onload = () => {
+                    console.log('Google Analytics2 v2 loaded successfully');
+                    showResult('script-results', '✅ New scripts loaded successfully!\n- helper3-v2.js loaded\n- google-analytics2-v2.js loaded\n\nYou can now test the functions above.', 'success');
+                };
+                analyticsScript.onerror = () => {
+                    console.error('Failed to load Google Analytics2 v2');
+                    showResult('script-results', '❌ Failed to load some scripts. Check console for errors.', 'error');
+                };
+                document.head.appendChild(analyticsScript);
+                
+            } catch (error) {
+                showResult('script-results', `❌ Script loading error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            showResult('helper3-results', '🚀 Ready to test Helper3 functions! Click the button above.', 'info');
+            showResult('analytics-results', '🚀 Ready to test Google Analytics functions! Click the button above.', 'info');
+            showResult('game-results', '🚀 Ready to test game integration! Click the button above.', 'info');
+            showResult('script-results', '🚀 Ready to load new scripts! Click the button above.', 'info');
+        });
+    </script>
+</body>
+</html>

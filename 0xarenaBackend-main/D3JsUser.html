@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3.js Hierarchical Tree with Multi-Filter</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.js"></script>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #121212;
+        color: #e0e0e0;
+      }
+      #loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(18, 18, 18, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      #loading-overlay img {
+        width: 100px;
+        height: 100px;
+        animation: rotate 2s linear infinite;
+      }
+      @keyframes rotate {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      #controls {
+        position: absolute;
+        background: rgba(30, 30, 30, 0.9);
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+        color: #e0e0e0;
+      }
+      svg {
+        width: 100%;
+        height: 100%;
+        background-color: #121212;
+      }
+      .node rect {
+        fill: #2d2d2d;
+        stroke: #00bcd4;
+        stroke-width: 2px;
+        transition: all 0.3s ease;
+      }
+      .node.highlight rect {
+        fill: #263238;
+        stroke: #ff9800;
+        filter: drop-shadow(0 0 5px rgba(255, 152, 0, 0.5));
+      }
+      .node.has-children rect {
+        stroke: #4caf50;
+      }
+      .node-indicator {
+        transition: all 0.3s ease;
+      }
+      .left-indicator {
+        fill: #2196f3;
+      }
+      .right-indicator {
+        fill: #ff9800;
+      }
+      .node text {
+        font: 12px sans-serif;
+        text-anchor: middle;
+        fill: #e0e0e0;
+        transition: all 0.3s ease;
+      }
+      .link {
+        fill: none;
+        stroke: #555555;
+        stroke-width: 2px;
+        transition: stroke 0.3s ease;
+      }
+      .link.highlight {
+        stroke: #ff9800;
+        stroke-width: 3px;
+      }
+      .noUi-tooltip {
+        display: none;
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border-color: #555555;
+      }
+      .noUi-active .noUi-tooltip {
+        display: block;
+      }
+      .form-control {
+        background-color: #2d2d2d;
+        color: #e0e0e0;
+        border-color: #555555;
+      }
+      .form-control:focus {
+        background-color: #3d3d3d;
+        color: #ffffff;
+        border-color: #00bcd4;
+        box-shadow: 0 0 0 0.2rem rgba(0, 188, 212, 0.25);
+      }
+      label {
+        color: #e0e0e0;
+      }
+      .btn-primary {
+        background-color: #00bcd4;
+        border-color: #00bcd4;
+      }
+      .btn-primary:hover {
+        background-color: #00a0b7;
+        border-color: #00a0b7;
+      }
+      .btn-secondary {
+        background-color: #4d4d4d;
+        border-color: #4d4d4d;
+      }
+      .btn-secondary:hover {
+        background-color: #666666;
+        border-color: #666666;
+      }
+      .collapse {
+        background-color: #1e1e1e;
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 10px;
+      }
+      /* noUiSlider custom styles */
+      .noUi-connect {
+        background: #00bcd4;
+      }
+      .noUi-handle {
+        background: #00bcd4;
+        border: 1px solid #00bcd4;
+        box-shadow: none;
+      }
+      .noUi-pips-horizontal {
+        color: #999999;
+      }
+      #legend {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(30, 30, 30, 0.9);
+        padding: 10px;
+        border-radius: 5px;
+        color: #e0e0e0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+      }
+      #legend-toggle {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 101;
+        background: #00bcd4;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .legend-color {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <img src="https://i.imgur.com/llF5iyg.png" alt="Loading..." />
+    </div>
+    <div id="controls" class="container-fluid">
+      <button
+        class="btn btn-primary btn-block"
+        type="button"
+        data-toggle="collapse"
+        data-target="#filterMenu"
+        aria-expanded="false"
+        aria-controls="filterMenu"
+      >
+        Filters
+      </button>
+      <div class="collapse" id="filterMenu">
+        <div class="row mt-3 ml-0 mr-0">
+          <div class="col-md-2">
+            <label for="filter-walletaddress">Wallet Address:</label>
+            <input
+              type="text"
+              id="filter-walletaddress"
+              class="form-control"
+              placeholder="Enter wallet address"
+            />
+          </div>
+          <div class="col-md-2">
+            <label for="filter-username">Username:</label>
+            <input
+              type="text"
+              id="filter-username"
+              class="form-control"
+              placeholder="Enter username"
+            />
+          </div>
+          <div class="col-md-2">
+            <label for="filter-email">Email:</label>
+            <input
+              type="text"
+              id="filter-email"
+              class="form-control"
+              placeholder="Enter email"
+            />
+          </div>
+          <div class="col-md-2">
+            <label for="filter-coins">Coins:</label>
+            <div id="coins-slider" class="mb-3"></div>
+          </div>
+          <div class="col-md-2">
+            <label for="filter-cheat-count">Cheat Count:</label>
+            <div id="cheat-count-slider" class="mb-3"></div>
+          </div>
+          <div class="col-md-2">
+            <!-- Empty space to maintain layout -->
+          </div>
+        </div>
+        <div class="row mt-5 ml-0 mr-0">
+          <div class="col-md-12 text-right">
+            <button id="filter-button" class="btn btn-primary">Filter</button>
+            <button id="reset-button" class="btn btn-secondary">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <svg></svg>
+    <div id="legend">
+      <h6>Node Indicators</h6>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #2196f3"></div>
+        <span>Left Node Count</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #ff9800"></div>
+        <span>Right Node Count</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #9c27b0"></div>
+        <span>Total Eq</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background-color: #4caf50"></div>
+        <span>Has Direct Referrals</span>
+      </div>
+    </div>
+    <button id="legend-toggle" title="Toggle Legend">?</button>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      let allNodes = [];
+      let coinsMin = Infinity,
+        coinsMax = -Infinity;
+      let cheatCountMin = Infinity,
+        cheatCountMax = -Infinity;
+
+      // Set initial dimensions based on window size
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      const svg = d3.select("svg").attr("width", width).attr("height", height);
+
+      const g = svg.append("g").attr("transform", "translate(40,0)");
+
+      const zoom = d3
+        .zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+          g.attr("transform", event.transform);
+        });
+
+      svg.call(zoom);
+
+      // Add zoom controls
+      const zoomControls = svg
+        .append("g")
+        .attr("class", "zoom-controls")
+        .attr("transform", "translate(20, 80)");
+
+      // Zoom in button - using just text without rect backgrounds
+      zoomControls
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#00bcd4")
+        .attr("font-size", "24px")
+        .attr("font-weight", "bold")
+        .attr("cursor", "pointer")
+        .text("+")
+        .on("click", () => {
+          svg.transition().duration(300).call(zoom.scaleBy, 1.5);
+        });
+
+      // Zoom out button
+      zoomControls
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 60)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#00bcd4")
+        .attr("font-size", "24px")
+        .attr("font-weight", "bold")
+        .attr("cursor", "pointer")
+        .text("−")
+        .on("click", () => {
+          svg.transition().duration(300).call(zoom.scaleBy, 0.75);
+        });
+
+      // Reset zoom button
+      zoomControls
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 100)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#ff9800")
+        .attr("font-size", "16px")
+        .attr("font-weight", "bold")
+        .attr("cursor", "pointer")
+        .text("Reset")
+        .on("click", fitToScreen);
+
+      // Fetch data from PHP API
+      // Get query parameters from the URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const walletAddress = urlParams.get("walletaddress");
+      const token = urlParams.get("token");
+
+      // Construct the fetch URL with the query parameters
+      const fetchUrl = `https://zeroxarenabackend.onrender.com/d3BackendUser.php?walletaddress=${walletAddress}&token=${token}`;
+
+      fetch(fetchUrl)
+        .then((response) => response.json())
+        .then((data) => {
+          // Filter out empty nodes
+          const nodes = data.nodes.filter(
+            (node) =>
+              node.username || node.email || node.coins || node["Cheat Count"]
+          );
+          allNodes = nodes; // Store all nodes for filtering
+
+          // Determine the min and max values for the sliders
+          nodes.forEach((node) => {
+            if (node.coins !== undefined) {
+              coinsMin = Math.min(coinsMin, node.coins);
+              coinsMax = Math.max(coinsMax, node.coins);
+            }
+            if (node["Cheat Count"] !== undefined) {
+              cheatCountMin = Math.min(cheatCountMin, node["Cheat Count"]);
+              cheatCountMax = Math.max(cheatCountMax, node["Cheat Count"]);
+            }
+          });
+
+          initializeSliders();
+          renderTree(nodes);
+          fitToScreen(); // Zoom out to fit the entire network
+          document.getElementById("loading-overlay").style.display = "none"; // Hide the loading overlay
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+
+      function initializeSliders() {
+        // Ensure min and max are not equal
+        if (coinsMin === coinsMax) {
+          coinsMax += 1;
+        }
+        if (cheatCountMin === cheatCountMax) {
+          cheatCountMax += 1;
+        }
+
+        const coinSlider = document.getElementById("coins-slider");
+        noUiSlider.create(coinSlider, {
+          start: [coinsMin, coinsMax],
+          connect: true,
+          range: {
+            min: coinsMin,
+            max: coinsMax,
+          },
+          tooltips: [true, true],
+          behaviour: "tap-drag",
+          pips: { mode: "count", values: 5 },
+        });
+
+        const cheatCountSlider = document.getElementById("cheat-count-slider");
+        noUiSlider.create(cheatCountSlider, {
+          start: [cheatCountMin, cheatCountMax],
+          connect: true,
+          range: {
+            min: cheatCountMin,
+            max: cheatCountMax,
+          },
+          tooltips: [true, true],
+          behaviour: "tap-drag",
+          pips: { mode: "count", values: 5 },
+        });
+
+        // Hide tooltips by default
+        const sliders = [coinSlider, cheatCountSlider];
+        sliders.forEach((slider) => {
+          slider.noUiSlider.on("start", function () {
+            slider.classList.add("noUi-active");
+          });
+          slider.noUiSlider.on("end", function () {
+            slider.classList.remove("noUi-active");
+          });
+        });
+      }
+
+      // Function to render the tree
+      function renderTree(nodes) {
+        // Clear previous nodes and links
+        g.selectAll(".link").remove();
+        g.selectAll(".node").remove();
+
+        // Convert the flat data into a hierarchical format
+        const dataMap = nodes.reduce((map, node) => {
+          map[node.id] = node;
+          return map;
+        }, {});
+
+        const treeData = [];
+        nodes.forEach((node) => {
+          // First try to use parentid, then fall back to referrer
+          const parentId = node.parentid || node.referrer;
+
+          if (parentId && parentId.trim() !== "" && parentId !== "None") {
+            const parent = dataMap[parentId];
+            if (parent) {
+              (parent.children || (parent.children = [])).push(node);
+            } else {
+              // Add nodes with non-existent parent to the root
+              treeData.push(node);
+            }
+          } else {
+            // Add nodes without parent to the root
+            treeData.push(node);
+          }
+        });
+
+        // Create root hierarchy node with all entries as children
+        const hierarchyData = {
+          id: "root",
+          username: "0xarena",
+          children: treeData,
+        };
+        const root = d3.hierarchy(hierarchyData);
+
+        // Use tree layout with vertical orientation
+        const treeLayout = d3
+          .tree()
+          .size([width - 200, height - 100])
+          .nodeSize([50, 120]) // Better spacing between nodes
+          .separation((a, b) => (a.parent === b.parent ? 3 : 5));
+
+        treeLayout(root);
+
+        // Create links with vertical orientation
+        const link = g
+          .selectAll(".link")
+          .data(root.links())
+          .enter()
+          .append("path")
+          .attr("class", "link")
+          .attr(
+            "d",
+            d3
+              .linkVertical()
+              .x((d) => d.x)
+              .y((d) => d.y)
+          )
+          .attr("id", (d) => `link-${d.source.data.id}-${d.target.data.id}`);
+
+        // Create nodes
+        const node = g
+          .selectAll(".node")
+          .data(root.descendants())
+          .enter()
+          .append("g")
+          .attr("class", (d) => {
+            let classes = "node";
+            // Add class for nodes that have direct referrals
+            if (d.children && d.children.length > 0) {
+              classes += " has-children";
+            }
+            return classes;
+          })
+          .attr("id", (d) => `node-${d.data.id}`)
+          .attr("transform", (d) => `translate(${d.x},${d.y})`)
+          .on("click", (event, d) => {
+            if (d.data.id === "root") return; // Skip root node
+
+            // Get node counts from the data
+            const leftNodes = d.data.left_node || 0;
+            const rightNodes = d.data.right_node || 0;
+            const totalEq = d.data.Total_eq || 0;
+
+            Swal.fire({
+              title: d.data.username || "User",
+              html: `
+                <p>Wallet Address: ${d.data.id}</p>
+                <p>Email: ${d.data.email || "N/A"}</p>
+                <p>Coins: ${d.data.coins || "0"}</p>
+                <p>Creation Date: ${d.data.CreationDate || "N/A"}</p>
+                <p>Is Email Verified: ${d.data.isemailverified || "N/A"}</p>
+                <p>Referrer: ${d.data.referrer || "None"}</p>
+                <p>Left Node Count: ${leftNodes}</p>
+                <p>Right Node Count: ${rightNodes}</p>
+                <p>Total Eq: ${totalEq}</p>
+                <p>Cheat Count: ${d.data["Cheat Count"] || "0"}</p>
+                <p>Is Banned: ${d.data["Is banned"] || "No"}</p>
+              `,
+              icon: "info",
+              background: "#1e1e1e",
+              color: "#e0e0e0",
+              confirmButtonColor: "#00bcd4",
+            });
+          })
+          .on("mouseover", (event, d) => {
+            // Highlight the current node
+            d3.select(`#node-${d.data.id}`).classed("highlight", true);
+
+            // Highlight direct children (referrals)
+            if (d.children) {
+              d.children.forEach((child) => {
+                d3.select(`#node-${child.data.id}`).classed("highlight", true);
+                d3.select(`#link-${d.data.id}-${child.data.id}`).classed(
+                  "highlight",
+                  true
+                );
+              });
+            }
+
+            // Highlight parent (referrer)
+            if (d.parent && d.parent.data.id !== "root") {
+              d3.select(`#node-${d.parent.data.id}`).classed("highlight", true);
+              d3.select(`#link-${d.parent.data.id}-${d.data.id}`).classed(
+                "highlight",
+                true
+              );
+            }
+          })
+          .on("mouseout", (event, d) => {
+            // Remove all highlights
+            d3.selectAll(".node").classed("highlight", false);
+            d3.selectAll(".link").classed("highlight", false);
+          });
+
+        // Add rectangles for nodes
+        node
+          .append("rect")
+          .attr("width", (d) => (d.data.id === "root" ? 100 : 120))
+          .attr("height", (d) => (d.data.id === "root" ? 30 : 40))
+          .attr("x", (d) => (d.data.id === "root" ? -50 : -60))
+          .attr("y", (d) => (d.data.id === "root" ? -15 : -20))
+          .attr("rx", 5)
+          .attr("ry", 5);
+
+        // Add indicator for nodes with direct referrals
+        node
+          .filter(
+            (d) => d.data.id !== "root" && d.children && d.children.length > 0
+          )
+          .append("circle")
+          .attr("class", "node-indicator")
+          .attr("r", 5)
+          .attr("cx", 0)
+          .attr("cy", 15)
+          .attr("fill", "#4caf50");
+
+        // Add text labels
+        node
+          .append("text")
+          .attr("dy", ".35em")
+          .attr("text-anchor", "middle")
+          .text((d) => {
+            if (d.data.id === "root") return "0xarena";
+            const username = d.data.username || "User";
+            return username.length > 15
+              ? username.substring(0, 12) + "..."
+              : username;
+          });
+
+        // Add wallet address as smaller text
+        node
+          .filter((d) => d.data.id !== "root")
+          .append("text")
+          .attr("dy", "1.5em")
+          .attr("text-anchor", "middle")
+          .attr("font-size", "8px")
+          .text((d) => (d.data.id ? d.data.id.substr(0, 16) + "..." : ""));
+
+        // Add indicators for nodes with referrals
+        // Right node indicator (right side)
+        node
+          .filter((d) => d.data.id !== "root" && d.data.right_node > 0)
+          .append("circle")
+          .attr("class", "node-indicator right-indicator")
+          .attr("r", 10)
+          .attr("cx", 50)
+          .attr("cy", -15)
+          .attr("fill", "#ff9800");
+
+        node
+          .filter((d) => d.data.id !== "root" && d.data.right_node > 0)
+          .append("text")
+          .attr("x", 50)
+          .attr("y", -12)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "10px")
+          .attr("fill", "#fff")
+          .text((d) => Math.min(99, d.data.right_node));
+
+        // Left node indicator (left side)
+        node
+          .filter((d) => d.data.id !== "root" && d.data.left_node > 0)
+          .append("circle")
+          .attr("class", "node-indicator left-indicator")
+          .attr("r", 10)
+          .attr("cx", -50)
+          .attr("cy", -15)
+          .attr("fill", "#2196f3");
+
+        node
+          .filter((d) => d.data.id !== "root" && d.data.left_node > 0)
+          .append("text")
+          .attr("x", -50)
+          .attr("y", -12)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "10px")
+          .attr("fill", "#fff")
+          .text((d) => Math.min(99, d.data.left_node));
+
+        // Total node count indicator (top)
+        node
+          .filter((d) => d.data.id !== "root" && d.data.Total_eq > 0)
+          .append("circle")
+          .attr("class", "node-indicator")
+          .attr("r", 10)
+          .attr("cx", 0)
+          .attr("cy", -25)
+          .attr("fill", "#9c27b0");
+
+        node
+          .filter((d) => d.data.id !== "root" && d.data.Total_eq > 0)
+          .append("text")
+          .attr("x", 0)
+          .attr("y", -22)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "10px")
+          .attr("fill", "#fff")
+          .text((d) => {
+            const totalEq = d.data.Total_eq || 0;
+            return totalEq > 99 ? "99+" : totalEq;
+          });
+
+        // Center the tree
+        g.attr("transform", `translate(${width / 2 - root.x},${50})`);
+      }
+
+      // Filter function
+      document.getElementById("filter-button").addEventListener("click", () => {
+        const walletAddressFilter = document
+          .getElementById("filter-walletaddress")
+          .value.toLowerCase();
+        const usernameFilter = document
+          .getElementById("filter-username")
+          .value.toLowerCase();
+        const emailFilter = document
+          .getElementById("filter-email")
+          .value.toLowerCase();
+        const coinsRange = document
+          .getElementById("coins-slider")
+          .noUiSlider.get();
+        const cheatCountRange = document
+          .getElementById("cheat-count-slider")
+          .noUiSlider.get();
+
+        const coinsMin = parseFloat(coinsRange[0]);
+        const coinsMax = parseFloat(coinsRange[1]);
+        const cheatCountMin = parseFloat(cheatCountRange[0]);
+        const cheatCountMax = parseFloat(cheatCountRange[1]);
+
+        g.selectAll(".node").each(function (d) {
+          const node = d3.select(this);
+          const data = d.data;
+
+          const matchesWalletAddress =
+            data.id && data.id.toLowerCase().includes(walletAddressFilter);
+          const matchesUsername =
+            data.username &&
+            data.username.toLowerCase().includes(usernameFilter);
+          const matchesEmail =
+            data.email && data.email.toLowerCase().includes(emailFilter);
+          const matchesCoins =
+            data.coins !== undefined &&
+            parseFloat(data.coins) >= coinsMin &&
+            parseFloat(data.coins) <= coinsMax;
+          const matchesCheatCount =
+            data["Cheat Count"] !== undefined &&
+            data["Cheat Count"] >= cheatCountMin &&
+            data["Cheat Count"] <= cheatCountMax;
+
+          if (
+            matchesWalletAddress &&
+            matchesUsername &&
+            matchesEmail &&
+            matchesCoins &&
+            matchesCheatCount
+          ) {
+            node.classed("highlight", true);
+            const currentScale = d3.zoomTransform(svg.node()).k;
+            const bounceScale = Math.min(1.5, 10 / currentScale);
+            node
+              .select("rect")
+              .transition()
+              .duration(500)
+              .attr("transform", `scale(${bounceScale})`)
+              .transition()
+              .duration(500)
+              .attr("transform", "scale(1)");
+            node
+              .select("text")
+              .transition()
+              .duration(500)
+              .attr("transform", `scale(${bounceScale})`)
+              .transition()
+              .duration(500)
+              .attr("transform", "scale(1)");
+          } else {
+            node.classed("highlight", false);
+          }
+        });
+      });
+
+      // Reset function
+      document.getElementById("reset-button").addEventListener("click", () => {
+        // Clear all filter inputs
+        document.getElementById("filter-walletaddress").value = "";
+        document.getElementById("filter-username").value = "";
+        document.getElementById("filter-email").value = "";
+
+        document
+          .getElementById("coins-slider")
+          .noUiSlider.set([coinsMin, coinsMax]);
+        document
+          .getElementById("cheat-count-slider")
+          .noUiSlider.set([cheatCountMin, cheatCountMax]);
+
+        // Remove highlights from all nodes
+        g.selectAll(".node").classed("highlight", false);
+      });
+
+      // Function to fit the tree to the screen
+      function fitToScreen() {
+        const bounds = g.node().getBBox();
+        const fullWidth = bounds.width;
+        const fullHeight = bounds.height;
+        const midX = bounds.x + fullWidth / 2;
+        const midY = bounds.y + fullHeight / 2;
+
+        const scale = 0.9 / Math.max(fullWidth / width, fullHeight / height);
+        const translate = [width / 2 - scale * midX, height / 2 - scale * midY];
+
+        svg
+          .transition()
+          .duration(750)
+          .call(
+            zoom.transform,
+            d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
+          );
+      }
+
+      // Add control buttons for tree layout
+      const layoutControls = svg
+        .append("g")
+        .attr("class", "layout-controls")
+        .attr("transform", "translate(20, 200)");
+
+      // Horizontal layout button
+      layoutControls
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 20)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#00bcd4")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold")
+        .attr("cursor", "pointer")
+        .text("Horizontal")
+        .on("click", () => {
+          toggleHorizontalLayout();
+        });
+
+      // Vertical layout button
+      layoutControls
+        .append("text")
+        .attr("x", 15)
+        .attr("y", 50)
+        .attr("text-anchor", "middle")
+        .attr("fill", "#00bcd4")
+        .attr("font-size", "12px")
+        .attr("font-weight", "bold")
+        .attr("cursor", "pointer")
+        .text("Vertical")
+        .on("click", () => {
+          toggleVerticalLayout();
+        });
+
+      // Variable to track current layout mode
+      let isHorizontalLayout = false;
+
+      // Toggle between horizontal and vertical layouts
+      function toggleHorizontalLayout() {
+        if (isHorizontalLayout) return;
+        isHorizontalLayout = true;
+
+        g.selectAll(".link")
+          .transition()
+          .duration(750)
+          .attr(
+            "d",
+            d3
+              .linkHorizontal()
+              .x((d) => d.y)
+              .y((d) => d.x)
+          );
+
+        g.selectAll(".node")
+          .transition()
+          .duration(750)
+          .attr("transform", (d) => `translate(${d.y},${d.x})`);
+
+        fitToScreen();
+      }
+
+      function toggleVerticalLayout() {
+        if (!isHorizontalLayout) return;
+        isHorizontalLayout = false;
+
+        g.selectAll(".link")
+          .transition()
+          .duration(750)
+          .attr(
+            "d",
+            d3
+              .linkVertical()
+              .x((d) => d.x)
+              .y((d) => d.y)
+          );
+
+        g.selectAll(".node")
+          .transition()
+          .duration(750)
+          .attr("transform", (d) => `translate(${d.x},${d.y})`);
+
+        fitToScreen();
+      }
+
+      // Adjust SVG dimensions on window resize
+      window.addEventListener("resize", () => {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        svg.attr("width", width).attr("height", height);
+      });
+
+      // Toggle legend
+      document.getElementById("legend-toggle").addEventListener("click", () => {
+        const legend = document.getElementById("legend");
+        if (legend.style.display === "none") {
+          legend.style.display = "block";
+        } else {
+          legend.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

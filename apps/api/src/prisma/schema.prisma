@@ -1,0 +1,1346 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Preference {
+  accountAddress  String   @id
+  appIcon         Int?     @default(0)
+  includeLowScore Boolean  @default(false)
+  createdAt       DateTime @default(now())
+}
+
+model PremiumProfile {
+  id            String    @id @default(cuid())
+  walletAddress String    @unique
+  profileId     String    @unique
+  isActive      Boolean   @default(true)
+  linkedAt      DateTime  @default(now())
+  deactivatedAt DateTime?
+  user          User      @relation(fields: [walletAddress], references: [walletAddress])
+
+  @@index([walletAddress])
+  @@index([profileId])
+  @@index([walletAddress, isActive])
+  @@index([profileId, isActive])
+}
+
+model User {
+  walletAddress        String             @id
+  familyWalletAddress  String?
+  linkedProfileId      String?
+  email                String?            @unique
+  username             String?            @unique
+  displayName          String?
+  avatarUrl            String?
+  bio                  String?
+  location             String?
+  website              String?
+  twitterHandle        String?
+  registrationDate     DateTime           @default(now())
+  referrerAddress      String?
+  registrationTxHash   String?
+  premiumUpgradedAt    DateTime?
+  lastActiveAt         DateTime           @default(now())
+  totalLogins          Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  status               UserStatus         @default(Standard)
+  
+  // Enhanced fields from PHP backend
+  password             String?            // Hashed password for traditional auth
+  token                String?            // User session token
+  isEmailVerified      Boolean            @default(false)
+  isUsernameChanged    Boolean            @default(false)
+  rolePermission       String             @default("Standard") // Standard, Premium, Admin
+  banned               Boolean            @default(false)
+  cheatCount           Int                @default(0)
+  totalEq              Int                @default(0) // Equilibrium points
+  leftNode             Int                @default(0) // Referral tree left count
+  rightNode            Int                @default(0) // Referral tree right count
+  todaysPoints         Int                @default(0) // Daily points
+  lastCoinUpdated      DateTime?          // Last coin update timestamp
+  staminaLevel         Int?               // Current stamina level
+  
+  // Relationships
+  premiumProfile     PremiumProfile?
+  userCoins          UserCoin[]
+  userCoinBalance    UserCoinBalance?
+  coinTransactions   CoinTransaction[]
+  leaderboardEntries LeaderboardEntry[]
+  userNotifications  UserNotification[]
+  preferences        UserPreferences?
+  userQuests         UserQuest[]
+  userRewards        UserReward[]
+  userStats          UserStats?
+  adminNotes         AdminNote[]
+  featureAccesses    FeatureAccess[]
+  gameLikes          GameLike[]
+  gameRatings        GameRating[]
+  gameDislikes       GameDislike[]
+  gameComments       GameComment[]
+  gameCommentLikes   GameCommentLike[]
+  gameFavorites      GameFavorite[]
+  gameReviews        GameReview[]
+  tournamentParticipants TournamentParticipant[]
+  lootBoxOpens       LootBoxOpen[]
+  lootBoxCooldowns   LootBoxCooldown[]
+  lootBoxDailyLimits LootBoxDailyLimit[]
+  
+  // New relationships from PHP backend
+  playHistory         PlayHistory[]
+  manualCaptcha       ManualCaptcha[]
+  withdrawTransactions WithdrawTransaction[]
+  userTransactions    UserTransaction[]
+  tournamentOfUsers   TournamentOfUser[]
+  notificationRecipients NotificationRecipient[]
+  eqLevelsStamina     EqLevelsStamina[]
+  slides              Slide[]
+  heroSlides          HeroSlide[]
+  tokenTx             TokenTx[]
+  usersArchive        UsersArchive[]
+
+  @@index([walletAddress])
+  @@index([familyWalletAddress])
+  @@index([linkedProfileId])
+  @@index([email])
+  @@index([username])
+  @@index([status])
+  @@index([registrationDate])
+  @@index([banned])
+  @@index([cheatCount])
+  @@index([totalEq])
+  @@index([rolePermission])
+  @@index([isEmailVerified])
+}
+
+model UserPreferences {
+  walletAddress      String       @id
+  emailNotifications Boolean      @default(true)
+  pushNotifications  Boolean      @default(true)
+  marketingEmails    Boolean      @default(false)
+  privacyLevel       PrivacyLevel @default(Public)
+  language           String       @default("en")
+  timezone           String       @default("UTC")
+  autoLinkProfile    Boolean      @default(true)
+  showPremiumBadge   Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  user               User         @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+}
+
+model UserStats {
+  walletAddress    String   @id
+  totalPosts       Int      @default(0)
+  totalComments    Int      @default(0)
+  totalLikes       Int      @default(0)
+  totalFollowers   Int      @default(0)
+  totalFollowing   Int      @default(0)
+  daysAsPremium    Int      @default(0)
+  referralCount    Int      @default(0)
+  totalEarnings    Decimal  @default(0) @db.Decimal(20, 8)
+  questsCompleted  Int      @default(0)
+  questsInProgress Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+}
+
+model UserReward {
+  id             String           @id @default(cuid())
+  walletAddress  String
+  type           RewardType
+  amount         Decimal          @db.Decimal(20, 8)
+  currency       String           @default("USDT")
+  status         RewardStatus     @default(Pending)
+  sourceType     RewardSourceType
+  sourceId       String?
+  sourceMetadata Json?
+  txHash         String?
+  claimedAt      DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([walletAddress, status, createdAt])
+  @@index([walletAddress, createdAt])
+}
+
+model UserQuest {
+  id              String      @id @default(cuid())
+  walletAddress   String
+  questId         String
+  title           String
+  description     String
+  type            QuestType
+  status          QuestStatus @default(Active)
+  currentProgress Int         @default(0)
+  targetProgress  Int
+  rewardAmount    Decimal?    @db.Decimal(20, 8)
+  rewardCurrency  String      @default("USDT")
+  completedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([questId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([walletAddress, status, createdAt])
+}
+
+model UserCoin {
+  id             String         @id @default(cuid())
+  walletAddress  String
+  coinType       CoinType
+  amount         Int            @default(0)
+  earnedAt       DateTime       @default(now())
+  sourceType     CoinSourceType
+  sourceId       String?
+  sourceMetadata Json?
+  createdAt      DateTime       @default(now())
+  user           User           @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([coinType])
+  @@index([earnedAt])
+  @@index([walletAddress, coinType])
+  @@index([sourceType, earnedAt])
+}
+
+model UserCoinBalance {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique
+  totalCoins    Int      @default(0)
+  experienceCoins Int    @default(0)
+  achievementCoins Int   @default(0)
+  socialCoins   Int      @default(0)
+  premiumCoins  Int      @default(0)
+  tether        Decimal  @default(0) @db.Decimal(20, 8) // USDT balance
+  lastUpdatedAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([totalCoins])
+  @@index([lastUpdatedAt])
+}
+
+model Leaderboard {
+  id            String           @id @default(cuid())
+  type          LeaderboardType
+  period        LeaderboardPeriod
+  startDate     DateTime
+  endDate       DateTime
+  isActive      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  entries       LeaderboardEntry[]
+
+  @@index([type, period, isActive])
+  @@index([startDate, endDate])
+}
+
+model LeaderboardEntry {
+  id             String      @id @default(cuid())
+  leaderboardId  String
+  walletAddress  String
+  rank           Int
+  totalCoins     Int
+  experienceCoins Int
+  achievementCoins Int
+  socialCoins    Int
+  premiumCoins   Int
+  lastUpdatedAt  DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  leaderboard    Leaderboard @relation(fields: [leaderboardId], references: [id], onDelete: Cascade)
+  user           User        @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([leaderboardId, walletAddress])
+  @@index([leaderboardId, rank])
+  @@index([walletAddress])
+  @@index([totalCoins])
+}
+
+model CoinTransaction {
+  id             String         @id @default(cuid())
+  walletAddress  String
+  coinType       CoinType
+  amount         Int
+  transactionType CoinTransactionType
+  sourceType     CoinSourceType
+  sourceId       String?
+  sourceMetadata Json?
+  balanceBefore  Int
+  balanceAfter   Int
+  description    String?
+  createdAt      DateTime       @default(now())
+  user           User           @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([coinType])
+  @@index([transactionType])
+  @@index([createdAt])
+  @@index([walletAddress, createdAt])
+}
+
+model UserNotification {
+  id             String               @id @default(cuid())
+  walletAddress  String
+  type           NotificationType
+  title          String
+  message        String
+  priority       NotificationPriority @default(Normal)
+  isRead         Boolean              @default(false)
+  readAt         DateTime?
+  actionUrl      String?
+  actionMetadata Json?
+  createdAt      DateTime             @default(now())
+  user           User                 @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([type])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([walletAddress, isRead, createdAt])
+  @@index([walletAddress, createdAt])
+}
+
+// Admin and RBAC Models
+model AdminUser {
+  id            String            @id @default(cuid())
+  walletAddress String            @unique
+  email         String            @unique
+  username      String            @unique
+  displayName   String?
+  role          AdminRole         @default(SupportAgent)
+  permissions   AdminPermission[]
+  isActive      Boolean           @default(true)
+  lastLoginAt   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  adminActions  AdminAction[]
+  adminNotes    AdminNote[]
+
+  @@index([walletAddress])
+  @@index([role])
+  @@index([isActive])
+}
+
+model AdminPermission {
+  id          String    @id @default(cuid())
+  adminUserId String
+  permission  String // e.g., "user.force_unlink", "user.grant_premium", "feature.manage"
+  grantedAt   DateTime  @default(now())
+  grantedBy   String // wallet address of admin who granted this permission
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([permission])
+}
+
+model AdminAction {
+  id              String            @id @default(cuid())
+  adminUserId     String
+  actionType      AdminActionType
+  targetWallet    String
+  targetProfileId String?
+  reason          String
+  metadata        Json?
+  status          AdminActionStatus @default(Pending)
+  result          Json?
+  errorMessage    String?
+  createdAt       DateTime          @default(now())
+  completedAt     DateTime?
+  adminUser       AdminUser         @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([actionType])
+  @@index([targetWallet])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AdminNote {
+  id            String    @id @default(cuid())
+  adminUserId   String
+  walletAddress String
+  note          String
+  isPrivate     Boolean   @default(false) // Private notes only visible to admins
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  adminUser     AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([adminUserId])
+  @@index([walletAddress])
+  @@index([createdAt])
+}
+
+model Feature {
+  id              String          @id @default(cuid())
+  featureId       String          @unique // e.g., "premium_chat", "advanced_analytics"
+  name            String
+  description     String
+  category        String // e.g., "communication", "analytics", "gaming"
+  standardAccess  Boolean         @default(false)
+  premiumAccess   Boolean         @default(true)
+  adminOverride   Boolean         @default(true)
+  isActive        Boolean         @default(true)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  featureAccesses FeatureAccess[]
+
+  @@index([featureId])
+  @@index([category])
+  @@index([isActive])
+}
+
+model FeatureAccess {
+  id            String    @id @default(cuid())
+  featureId     String
+  walletAddress String
+  grantedBy     String? // admin wallet address
+  grantedAt     DateTime  @default(now())
+  expiresAt     DateTime?
+  isActive      Boolean   @default(true)
+  feature       Feature   @relation(fields: [featureId], references: [id], onDelete: Cascade)
+  user          User      @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([featureId])
+  @@index([walletAddress])
+  @@index([isActive])
+}
+
+model Game {
+  id             String           @id @default(cuid())
+  title          String           @db.VarChar(200)
+  slug           String           @unique @db.VarChar(100)
+  description    String           @db.Text
+  instructions   String?          @db.Text
+  packageUrl     String           @db.VarChar(500)
+  entryFilePath  String           @default("index.html") @db.VarChar(100)
+  iconUrl        String           @db.VarChar(500)
+  coverImageUrl  String           @db.VarChar(500)
+  width          Int              @default(1280) @db.SmallInt
+  height         Int              @default(720) @db.SmallInt
+  orientation    GameOrientation  @default(Landscape)
+  gameType       GameType         @default(FreeToPlay)
+  developerName  String?          @db.VarChar(100)
+  version        String?          @db.VarChar(20)
+  status         GameStatus       @default(Draft)
+  playCount      Int              @default(0) @db.Integer
+  likeCount      Int              @default(0) @db.Integer
+  dislikeCount   Int              @default(0) @db.Integer
+  rating         Float            @default(0) @db.Real
+  ratingCount    Int              @default(0) @db.Integer
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  GameScreenshot GameScreenshot[]
+  categories     GameCategory[]   @relation("GameToGameCategory")
+  GameTag        GameTag[]        @relation("GameToGameTag")
+
+  gamePlays      GamePlay[]
+  gameReports    GameReport[]
+  gameLikes      GameLike[]
+  gameRatings    GameRating[]
+  gameDislikes   GameDislike[]
+  gameComments   GameComment[]
+  gameFavorites  GameFavorite[]
+  gameReviews    GameReview[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([gameType])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([gameType, status])
+}
+
+model GameCategory {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  slug            String?  @unique
+  description     String?
+  metaDescription String?
+  icon            String?
+  color           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  games           Game[]   @relation("GameToGameCategory")
+
+  @@index([name])
+  @@index([slug])
+}
+
+model GameScreenshot {
+  id        String   @id
+  gameId    String
+  imageUrl  String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  Game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+  @@index([order])
+}
+
+model GameTag {
+  id        String   @id
+  name      String   @unique
+  createdAt DateTime @default(now())
+  Game      Game[]   @relation("GameToGameTag")
+
+  @@index([name])
+}
+
+
+
+model GamePlay {
+  id            String    @id @default(cuid())
+  gameId        String
+  playerAddress String
+  playDuration  Int?
+  score         Int?
+  completed     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  game          Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+  @@index([playerAddress])
+  @@index([createdAt])
+}
+
+model GameReport {
+  id               String   @id @default(cuid())
+  gameId           String
+  reporterAddress  String
+  reason           String
+  description      String?
+  createdAt        DateTime @default(now())
+  game             Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId])
+  @@index([reporterAddress])
+  @@index([createdAt])
+}
+
+model GameLike {
+  id            String   @id @default(cuid())
+  gameId        String
+  userAddress   String
+  createdAt     DateTime @default(now())
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([gameId, userAddress])
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([createdAt])
+}
+
+model GameRating {
+  id            String   @id @default(cuid())
+  gameId        String
+  userAddress   String
+  rating        Int      // 1-5 rating
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([gameId, userAddress])
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model GameDislike {
+  id            String   @id @default(cuid())
+  gameId        String
+  userAddress   String
+  createdAt     DateTime @default(now())
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([gameId, userAddress])
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([createdAt])
+}
+
+model GameComment {
+  id            String               @id @default(cuid())
+  gameId        String
+  userAddress   String
+  content       String
+  parentId      String?              // For replies
+  isEdited      Boolean              @default(false)
+  editedAt      DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  
+  game          Game                 @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User                 @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+  parent        GameComment?         @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       GameComment[]        @relation("CommentReplies")
+  likes         GameCommentLike[]
+  
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model GameCommentLike {
+  id            String      @id @default(cuid())
+  commentId     String
+  userAddress   String
+  createdAt     DateTime    @default(now())
+  
+  comment       GameComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+  
+  @@unique([commentId, userAddress])
+  @@index([commentId])
+  @@index([userAddress])
+}
+
+model GameFavorite {
+  id            String   @id @default(cuid())
+  gameId        String
+  userAddress   String
+  createdAt     DateTime @default(now())
+  
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+  
+  @@unique([gameId, userAddress])
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([createdAt])
+}
+
+model GameReview {
+  id            String   @id @default(cuid())
+  gameId        String
+  userAddress   String
+  title         String
+  content       String
+  rating        Int      // 1-5 stars
+  isRecommended Boolean  @default(true)
+  playTime      Int?     // minutes played before review
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  game          Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userAddress], references: [walletAddress], onDelete: Cascade)
+  
+  @@unique([gameId, userAddress])
+  @@index([gameId])
+  @@index([userAddress])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+// Tournament System Models
+model Tournament {
+  id                String                     @id @default(cuid())
+  name              String
+  type              String                     // 'Balanced' | 'Unbalanced'
+  status            String                     // 'Upcoming' | 'Active' | 'Ended' | 'Settled'
+  startDate         DateTime
+  endDate           DateTime
+  prizePool         Decimal                    @db.Decimal(38, 18)
+  // Eligibility controls
+  minCoins          Decimal?                   @db.Decimal(38, 18)
+  equilibriumMin    Int?
+  equilibriumMax    Int?
+  prizeTokenAddress String?
+  chainId           Int?
+  createdAt         DateTime                   @default(now())
+  updatedAt         DateTime                   @updatedAt
+
+  // Settlement metadata
+  settledAt         DateTime?
+  settlementTxHash  String?
+
+  // Enhanced fields from PHP backend
+  tournamentId      String?                    @unique // Random 10-char ID from PHP
+  gameName          String?
+  coinsGathered     Decimal                    @default(0) @db.Decimal(20, 8)
+  isDisabled        Boolean                    @default(false)
+  tagForSeo         String?
+  minimumCoin       Decimal?                   @db.Decimal(20, 8)
+  minimumRefer      Int?
+  maximumRefer      Int?
+  storageCapacity   Int?
+  tournamentPrize   Decimal?                   @db.Decimal(20, 8)
+
+  participants      TournamentParticipant[]
+  userTransactions  UserTransaction[]
+  tournamentOfUsers TournamentOfUser[]
+
+  @@index([status, startDate])
+  @@index([type, status])
+  @@index([tournamentId])
+  @@index([isDisabled])
+  @@index([gameName])
+}
+
+model TournamentParticipant {
+  id              String     @id @default(cuid())
+  tournamentId    String
+  walletAddress   String
+  eligibilityType String     // snapshot at join time: 'Balanced' | 'Unbalanced'
+  coinsBurned     Decimal    @db.Decimal(38, 18)
+  prizeShareBps   Int?
+  prizeAmount     Decimal?   @db.Decimal(38, 18)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([tournamentId, walletAddress])
+  @@index([tournamentId])
+  @@index([walletAddress])
+}
+
+// Optional cache for referral segmentation to reduce RPC calls
+model ReferralBalanceCache {
+  id            String   @id @default(cuid())
+  walletAddress String   @unique
+  isBalanced    Boolean
+  leftCount     Int
+  rightCount    Int
+  equilibriumPoint Int?
+  updatedAt     DateTime @updatedAt
+}
+
+enum UserStatus {
+  Standard
+  Premium
+}
+
+enum PrivacyLevel {
+  Public
+  Private
+  FriendsOnly
+}
+
+enum RewardType {
+  Referral
+  Quest
+  Activity
+  Bonus
+  Welcome
+}
+
+enum RewardStatus {
+  Pending
+  Claimed
+  Failed
+  Expired
+}
+
+enum RewardSourceType {
+  Registration
+  Referral
+  Quest
+  Activity
+  Admin
+}
+
+enum QuestType {
+  Welcome
+  Referral
+  Activity
+  Social
+  Premium
+}
+
+enum QuestStatus {
+  Active
+  Completed
+  Expired
+  Failed
+}
+
+enum CoinType {
+  Experience
+  Achievement
+  Social
+  Premium
+}
+
+enum CoinSourceType {
+  Registration
+  Referral
+  Quest
+  Activity
+  Social
+  GamePlay
+  Tournament
+  Admin
+  Bonus
+  Achievement
+  DailyLogin
+  WeeklyChallenge
+  LootBox
+  MonthlyReward
+}
+
+enum LeaderboardType {
+  FreeToEarn
+  PlayToEarn
+  AllTime
+  Weekly
+  Monthly
+}
+
+enum LeaderboardPeriod {
+  Daily
+  Weekly
+  Monthly
+  AllTime
+}
+
+enum CoinTransactionType {
+  Earned
+  Spent
+  Transferred
+  Refunded
+  AdminAdjustment
+}
+
+enum NotificationType {
+  Welcome
+  Premium
+  Quest
+  Reward
+  Referral
+  System
+  Marketing
+}
+
+enum NotificationPriority {
+  Low
+  Normal
+  High
+  Urgent
+}
+
+enum GameStatus {
+  Draft
+  Published
+}
+
+enum GameOrientation {
+  Landscape
+  Portrait
+  Both
+}
+
+enum GameType {
+  FreeToPlay
+  PlayToEarn
+}
+
+enum AdminRole {
+  SuperAdmin
+  SupportAgent
+  Auditor
+  Moderator
+}
+
+enum AdminActionType {
+  ForceUnlinkProfile
+  ForceLinkProfile
+  GrantPremium
+  RevokePremium
+  UpdateFeatureAccess
+  AddAdminNote
+  UpdateUserStatus
+  BlockUser
+  UnblockUser
+}
+
+enum AdminActionStatus {
+  Pending
+  Completed
+  Failed
+  Cancelled
+}
+
+// Loot Box System Models
+model LootBox {
+  id                String           @id @default(cuid())
+  name              String
+  description       String?
+  type              LootBoxType
+  isActive          Boolean          @default(true)
+  cooldownMinutes   Int              @default(60) // Cooldown between opens
+  maxOpensPerDay    Int?             // Daily limit (null = unlimited)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  
+  // Free loot box settings
+  adRequired        Boolean          @default(false)
+  adProvider        String?          // "google", "unity", "ironsource", etc.
+  adPlacementId     String?
+  
+  // Premium loot box settings
+  requiresPremium   Boolean          @default(false)
+  
+  // Coin rewards for free loot boxes
+  minCoinReward     Int              @default(10)
+  maxCoinReward     Int              @default(100)
+  coinType          CoinType         @default(Experience)
+  
+  rewards           LootBoxReward[]
+  userOpens         LootBoxOpen[]
+  cooldowns         LootBoxCooldown[]
+  dailyLimits       LootBoxDailyLimit[]
+  
+  @@index([type])
+  @@index([isActive])
+  @@index([type, isActive])
+}
+
+model LootBoxReward {
+  id              String           @id @default(cuid())
+  lootBoxId       String
+  rewardType      LootBoxRewardType
+  rewardValue     String           // JSON string containing reward data
+  probability     Float            // 0.0 to 1.0
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  lootBox         LootBox          @relation(fields: [lootBoxId], references: [id], onDelete: Cascade)
+  userRewards     LootBoxOpenReward[]
+  
+  @@index([lootBoxId])
+  @@index([rewardType])
+  @@index([isActive])
+}
+
+model LootBoxOpen {
+  id                String               @id @default(cuid())
+  walletAddress     String
+  lootBoxId         String
+  adWatched         Boolean              @default(false)
+  adProvider        String?
+  adPlacementId     String?
+  adRewardId        String?              // Ad provider's reward ID
+  openedAt          DateTime             @default(now())
+  ipAddress         String?
+  userAgent         String?
+  sessionId         String?
+  
+  lootBox           LootBox              @relation(fields: [lootBoxId], references: [id], onDelete: Cascade)
+  user              User                 @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  rewards           LootBoxOpenReward[]
+  
+  @@index([walletAddress])
+  @@index([lootBoxId])
+  @@index([openedAt])
+  @@index([walletAddress, openedAt])
+  @@index([walletAddress, lootBoxId, openedAt])
+}
+
+model LootBoxOpenReward {
+  id              String           @id @default(cuid())
+  lootBoxOpenId   String
+  rewardId        String
+  rewardType      LootBoxRewardType
+  rewardValue     String           // JSON string containing actual reward given
+  claimedAt       DateTime?
+  createdAt       DateTime         @default(now())
+  
+  lootBoxOpen     LootBoxOpen      @relation(fields: [lootBoxOpenId], references: [id], onDelete: Cascade)
+  reward          LootBoxReward    @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  
+  @@index([lootBoxOpenId])
+  @@index([rewardId])
+  @@index([rewardType])
+  @@index([claimedAt])
+}
+
+model LootBoxCooldown {
+  id              String           @id @default(cuid())
+  walletAddress   String
+  lootBoxId       String
+  lastOpenedAt    DateTime
+  nextAvailableAt DateTime
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  user            User             @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  lootBox         LootBox          @relation(fields: [lootBoxId], references: [id], onDelete: Cascade)
+  
+  @@unique([walletAddress, lootBoxId])
+  @@index([walletAddress])
+  @@index([lootBoxId])
+  @@index([nextAvailableAt])
+}
+
+model LootBoxDailyLimit {
+  id              String           @id @default(cuid())
+  walletAddress   String
+  lootBoxId       String
+  date            DateTime         @db.Date
+  openCount       Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  user            User             @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  lootBox         LootBox          @relation(fields: [lootBoxId], references: [id], onDelete: Cascade)
+  
+  @@unique([walletAddress, lootBoxId, date])
+  @@index([walletAddress])
+  @@index([lootBoxId])
+  @@index([date])
+}
+
+// NFT and Crypto Reward Models
+model NFTCollection {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?
+  contractAddress String
+  chainId         Int
+  symbol          String?
+  imageUrl        String?
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  nfts            NFT[]
+  
+  @@index([contractAddress, chainId])
+  @@index([isActive])
+}
+
+model NFT {
+  id              String           @id @default(cuid())
+  collectionId    String
+  tokenId         String
+  name            String
+  description     String?
+  imageUrl        String?
+  rarity          String?          // "common", "rare", "epic", "legendary"
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  collection      NFTCollection    @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  
+  @@unique([collectionId, tokenId])
+  @@index([collectionId])
+  @@index([rarity])
+  @@index([isActive])
+}
+
+model CryptoReward {
+  id              String           @id @default(cuid())
+  symbol          String           // "USDT", "ETH", "BTC"
+  name            String
+  contractAddress String?
+  chainId         Int
+  decimals        Int              @default(18)
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  @@index([symbol])
+  @@index([contractAddress, chainId])
+  @@index([isActive])
+}
+
+// Ad Integration Models
+model AdProvider {
+  id              String           @id @default(cuid())
+  name            String           @unique
+  displayName     String
+  isActive        Boolean          @default(true)
+  config          Json             // Provider-specific configuration
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  placements      AdPlacement[]
+  
+  @@index([name])
+  @@index([isActive])
+}
+
+model AdPlacement {
+  id              String           @id @default(cuid())
+  providerId      String
+  placementId     String
+  name            String
+  adFormat        String           // "banner", "interstitial", "rewarded"
+  isActive        Boolean          @default(true)
+  config          Json             // Placement-specific configuration
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  
+  provider        AdProvider       @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  
+  @@unique([providerId, placementId])
+  @@index([providerId])
+  @@index([adFormat])
+  @@index([isActive])
+}
+
+
+// Enums for Loot Box System
+enum LootBoxType {
+  Free
+  Premium
+}
+
+enum LootBoxRewardType {
+  Coins
+  NFT
+  Crypto
+  Experience
+  Achievement
+}
+
+enum LootBoxStatus {
+  Available
+  OnCooldown
+  DailyLimitReached
+  Inactive
+  RequiresPremium
+}
+
+// Additional models from PHP backend integration
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // MD5 hashed (needs migration to bcrypt)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Notification {
+  id          String               @id @default(cuid())
+  title       String
+  description String
+  priority    NotificationPriority @default(Normal)
+  type        NotificationType
+  isAll       Boolean              @default(false) // If true, sent to all users
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  recipients NotificationRecipient[]
+
+  @@index([type])
+  @@index([isAll])
+  @@index([createdAt])
+}
+
+model NotificationRecipient {
+  id             String       @id @default(cuid())
+  notificationId String
+  recipient      String       // Wallet address
+  isSeen         Boolean      @default(false)
+  seenAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [recipient], references: [walletAddress], onDelete: Cascade)
+
+  @@unique([notificationId, recipient])
+  @@index([notificationId])
+  @@index([recipient])
+  @@index([isSeen])
+}
+
+model PlayHistory {
+  id           String   @id @default(cuid())
+  walletAddress String
+  banDate      DateTime?
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([banDate])
+}
+
+model ManualCaptcha {
+  id            String   @id @default(cuid())
+  walletAddress String
+  captchaData   String   // Captcha challenge data
+  isSolved      Boolean  @default(false)
+  solvedAt      DateTime?
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([isSolved])
+}
+
+model WithdrawTransaction {
+  id                    String   @id @default(cuid())
+  walletAddress         String
+  userTx                String   // User transaction hash
+  amount                Decimal  @db.Decimal(20, 8) // Amount in micro-units
+  fromField             String   // Source field
+  toField               String   // Destination field
+  dateOfTransaction     DateTime @default(now())
+  createdAt             DateTime @default(now())
+
+  user                  User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([userTx])
+  @@index([dateOfTransaction])
+  @@index([fromField, toField])
+}
+
+model UserTransaction {
+  id              String   @id @default(cuid())
+  walletAddress   String
+  tournamentId    String
+  tournamentName  String
+  startDate       DateTime
+  endDate         DateTime
+  coinsGathered   Decimal  @db.Decimal(20, 8)
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([tournamentId])
+  @@index([createdAt])
+}
+
+model TournamentOfUser {
+  id            String     @id @default(cuid())
+  tournamentId  String
+  walletAddress String
+  createdAt     DateTime   @default(now())
+
+  user          User       @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+  tournament    Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@unique([tournamentId, walletAddress])
+  @@index([tournamentId])
+  @@index([walletAddress])
+}
+
+model EqLevelsStamina {
+  id           String   @id @default(cuid())
+  minEq        Int
+  maxEq        Int
+  levelValue   Int
+  creationDate DateTime @default(now())
+
+  users        User[]
+
+  @@index([minEq, maxEq])
+  @@index([levelValue])
+}
+
+model Slide {
+  id          String   @id @default(cuid())
+  imageData   String   // Base64 image data
+  mobileUrl   String?  // Mobile version URL
+  desktopUrl  String?  // Desktop version URL
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  imageData String   // LOB image data
+  active    Boolean  @default(true)
+  endTime   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+
+  @@index([active])
+  @@index([endTime])
+}
+
+model TokenTx {
+  id              String   @id @default(cuid())
+  walletAddress   String
+  txHash          String
+  fromAddress     String
+  toAddress       String
+  amount          Decimal  @db.Decimal(20, 8)
+  tokenAddress    String
+  blockNumber     Int
+  blockHash       String
+  transactionIndex Int
+  gasUsed         Decimal  @db.Decimal(20, 8)
+  gasPrice        Decimal  @db.Decimal(20, 8)
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([txHash])
+  @@index([tokenAddress])
+  @@index([blockNumber])
+  @@index([createdAt])
+}
+
+model UsersArchive {
+  id              String   @id @default(cuid())
+  walletAddress   String
+  username        String?
+  email           String?
+  coins           Int      @default(0)
+  tether          Decimal  @default(0) @db.Decimal(20, 8)
+  referer         String?
+  leftNode        Int      @default(0)
+  rightNode       Int      @default(0)
+  totalEq         Int      @default(0)
+  banned          Boolean  @default(false)
+  cheatCount      Int      @default(0)
+  creationDate    DateTime
+  isEmailVerified Boolean  @default(false)
+  isUsernameChanged Boolean @default(false)
+  rolePermission  String   @default("Standard")
+  password        String?
+  token           String?  // Will be reset for new platform
+  archivedAt      DateTime @default(now())
+
+  user            User     @relation(fields: [walletAddress], references: [walletAddress], onDelete: Cascade)
+
+  @@index([walletAddress])
+  @@index([archivedAt])
+  @@index([creationDate])
+}

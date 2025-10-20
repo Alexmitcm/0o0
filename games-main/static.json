@@ -1,0 +1,19 @@
+{
+  "headers": {
+    "/**/*.css": {
+      "Content-Type": "text/css"
+    },
+    "/**/*.js": {
+      "Content-Type": "application/javascript"
+    },
+    "/**/*.png": {
+      "Content-Type": "image/png"
+    },
+    "/**/*.jpg": {
+      "Content-Type": "image/jpeg"
+    },
+    "/**/*.svg": {
+      "Content-Type": "image/svg+xml"
+    }
+  }
+}

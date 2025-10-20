@@ -1,0 +1,4 @@
+﻿ALTER TABLE "Tournament" ADD COLUMN IF NOT EXISTS "minCoins" NUMERIC(38,18);
+ALTER TABLE "Tournament" ADD COLUMN IF NOT EXISTS "equilibriumMin" INTEGER;
+ALTER TABLE "Tournament" ADD COLUMN IF NOT EXISTS "equilibriumMax" INTEGER;
+ALTER TABLE "ReferralBalanceCache" ADD COLUMN IF NOT EXISTS "equilibriumPoint" INTEGER;

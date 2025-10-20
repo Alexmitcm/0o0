@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hey</title>
+    
+    <!-- Console Error Suppression Script -->
+    <script>
+      // Suppress iframe/ad-related console errors immediately
+      (function() {
+        // Immediate suppression for common errors
+        const immediateSuppress = (message) => {
+          return message.includes('Attestation check') || 
+                 message.includes('cdn.htmlgames.com') ||
+                 message.includes('hxkk:1') ||
+                 message.includes('Topics on https') ||
+                 message.includes('ads.pubmatic.com') ||
+                 message.includes('favicon.ico') ||
+                 message.includes('inpage.js') ||
+                 message.includes('pubmatic') ||
+                 message.includes('404 (Not Found)') ||
+                 message.includes('GET https://ads.') ||
+                 message.includes('AdServer') ||
+                 message.includes('topics/favicon');
+        };
+        
+        // Override console methods immediately
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const originalLog = console.log;
+        
+        console.error = (...args) => {
+          const message = args.join(' ');
+          if (immediateSuppress(message)) return;
+          originalError.apply(console, args);
+        };
+        
+        console.warn = (...args) => {
+          const message = args.join(' ');
+          if (immediateSuppress(message)) return;
+          originalWarn.apply(console, args);
+        };
+        
+        console.log = (...args) => {
+          const message = args.join(' ');
+          if (immediateSuppress(message)) return;
+          originalLog.apply(console, args);
+        };
+        
+        console.log('🔇 Immediate console suppression activated');
+      })();
+      
+      // Full suppression script
+      (function() {
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        const originalLog = console.log;
+        
+        const shouldSuppress = (message) => {
+          const adPatterns = [
+            /adform\.net/i,
+            /plista\.com/i,
+            /extend\.tv/i,
+            /opera\.com/i,
+            /htmlgames\.com/i,
+            /cdn\.htmlgames\.com/i,
+            /adnxs\.com/i,
+            /crwdcntrl\.net/i,
+            /rlcdn\.com/i,
+            /33across\.com/i,
+            /euid\.eu/i,
+            /net::ERR_/i,
+            /Attestation check/i,
+            /Failed to convert value/i,
+            /sw\.js/i,
+            /async_usersync/i,
+            /provider\.js/i,
+            /usync\.js/i,
+            /pubads_impl\.js/i,
+            /load-cookie\.html/i,
+            /usermatch/i,
+            /cookie_sync/i,
+            /loadPixel/i,
+            /processPixels/i,
+            /queuePixels/i,
+            /advertising/i,
+            /tracking/i,
+            /analytics/i,
+            /ads/i,
+            /banner/i,
+            /pixel/i,
+            /beacon/i,
+            /script/i,
+            /iframe/i,
+            /cross-origin/i,
+            /CORS/i,
+            /XMLHttpRequest/i,
+            /fetch/i,
+            /GET https?:\/\/[^\/]*(ad|track|analytics|ads|marketing|affiliate)\./i,
+            /hxkk:1/i,
+            /Topics on https/i,
+            /cdn\.htmlgames\.com/i
+          ];
+          
+          return adPatterns.some(pattern => pattern.test(message));
+        };
+        
+        console.error = (...args) => {
+          const message = args.join(' ');
+          if (shouldSuppress(message)) return;
+          originalError.apply(console, args);
+        };
+        
+        console.warn = (...args) => {
+          const message = args.join(' ');
+          if (shouldSuppress(message)) return;
+          originalWarn.apply(console, args);
+        };
+        
+        console.log = (...args) => {
+          const message = args.join(' ');
+          if (shouldSuppress(message)) return;
+          originalLog.apply(console, args);
+        };
+        
+        // Override window.onerror
+        window.onerror = (message, source, lineno, colno, error) => {
+          const errorMessage = `${message} at ${source}:${lineno}:${colno}`;
+          if (shouldSuppress(errorMessage)) return true;
+          return false;
+        };
+        
+        // Override unhandledrejection
+        window.addEventListener('unhandledrejection', (event) => {
+          const message = event.reason?.toString() || '';
+          if (shouldSuppress(message)) {
+            event.preventDefault();
+          }
+        });
+        
+        console.log('🔇 Console error suppression activated');
+      })();
+      
+      // Additional immediate suppression for iframe errors
+      window.addEventListener('error', (event) => {
+        const message = event.message || '';
+        if (message.includes('Attestation check') || 
+            message.includes('cdn.htmlgames.com') ||
+            message.includes('hxkk:1') ||
+            message.includes('Topics on https')) {
+          event.preventDefault();
+          event.stopPropagation();
+          return false;
+        }
+      });
+      
+      // Suppress unhandled promise rejections
+      window.addEventListener('unhandledrejection', (event) => {
+        const message = event.reason?.toString() || '';
+        if (message.includes('Attestation check') || 
+            message.includes('cdn.htmlgames.com') ||
+            message.includes('hxkk:1') ||
+            message.includes('Topics on https')) {
+          event.preventDefault();
+          return false;
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="_hey_"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

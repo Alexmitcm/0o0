@@ -1,0 +1,5 @@
+Upload "zip" file to your CloudArcade site.
+
+You need to fill description, instructions, categories, width and height manually.
+
+Thumbnails is already included.

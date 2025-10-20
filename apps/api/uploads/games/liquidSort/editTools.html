@@ -1,0 +1,75 @@
+<div id="editWrapper">
+    <div id="floatForm">
+    	<input id='toggleShowOption' name="toggleOption" type="button" value="Hide Edit Option" />
+        
+        <div id="editOption">
+			<br/>
+        	<div id="editOptionWrapper">				
+                Select tubes:<br/>
+                <select id="tubelist" name="tubelist">
+                </select><br/>
+                <input id="prevTube" name="prevTube" class="button" type="button" value="Prev Tube">
+                <input id="nextTube" name="nextTube" class="button" type="button" value="Next Tube">
+                <br/><br/>
+                <div id='topWrapper'>
+                <input id="removeTube" name="removeTube" type="button" value="Remove Tube">
+                <input id="addTube" name="addTube" type="button" value="Add Tube">
+                <br/><br/>
+                </div>
+        		<div id="actionWrapper">
+                	 Edit Tube:<br/>
+                    <input id='editTube' name="editTube" type="button" value="Edit Tube" />
+                    <br/><br/>
+                    Generate and replace tube array:<br/>
+                    <input id='generateArray' name="generateArray" type="button" value="Generate Array" />
+                    <textarea id="outputArray" name="outputArray" cols="" rows="10"></textarea>
+                </div>
+             </div>
+        
+            <div id='tubeWrapper' style="display:none;">
+                Edit tube:<br/>
+				<label class="button">Image Back:</label>
+				<input id="imageBack" name="imageBack" type="text" /><br><br>
+                <label class="button">Image Front:</label>
+				<input id="imageFront" name="imageFront" type="text" /><br><br>
+                <div class="formRow">
+                    <label class="button">CenterX:</label>
+                    <input id="centerX" name="centerX" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">CenterY:</label>
+                    <input id="centerY" name="centerY" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">Fill Width:</label>
+                    <input id="fillW" name="fillW" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">Fill Height:</label>
+                    <input id="fillH" name="fillH" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">Tube Width:</label>
+                    <input id="tubeW" name="tubeW" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">Tube Height:</label>
+                    <input id="tubeH" name="tubeH" class="button" type="text" />
+                </div>
+                <div class="formRow">
+                    <label class="button">Perspective:</label>
+                    <select id="perspective" name="perspective">
+                        <option value="0">false</option>
+                        <option value="1">true</option>
+                    </select>
+                </div><br>
+                Edit mask:<br/>
+                Doubleclick on stage to draw the masking path.
+                <input id='removePoint' name="removePoint" type="button" value="Remove Point" /><br><br>
+
+                <input id='updateImage' name="updateImage" type="button" value="Update Image" />
+                <input id='doneTube' name="doneTube" type="button" value="Done" />
+            </div>
+         </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  color: white;
+
+  background: #000000;
+}
+
+html,
+body,
+canvas {
+  touch-action: none;
+  touch-action-delay: none;
+}
+
+#notSupportedWrap {
+  width: 75%;
+  max-width: 45em;
+  padding: 2em;
+  margin: 2em auto 1em auto;
+  font-family:
+    "Segoe UI", Frutiger, "Frutiger Linotype", "Dejavu Sans", "Helvetica Neue",
+    Arial, sans-serif;
+  color: black;
+  background-color: #f0f0f0;
+  border: 2px solid #aaa;
+  border-radius: 1em;
+}
+
+#notSupportedTitle {
+  font-size: 1.8em;
+}
+
+.notSupportedMessage {
+  font-size: 1.2em;
+}
+
+.notSupportedMessage em {
+  color: #888;
+}
+
+@font-face {
+  font-family: "norwester";
+  src: url("fonts/norwester.otf") format("opentype");
+}

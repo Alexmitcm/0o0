@@ -1,0 +1,23 @@
+/* Progress bar styles for System Management Panel */
+.progress-bar {
+  height: 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.progress-bar-cpu {
+  background-color: #2563eb;
+}
+
+.progress-bar-memory {
+  background-color: #16a34a;
+}
+
+.progress-bar-disk {
+  background-color: #ca8a04;
+}
+
+/* CSS custom properties for dynamic width */
+.progress-bar[data-width] {
+  width: var(--progress-width, 0%);
+}

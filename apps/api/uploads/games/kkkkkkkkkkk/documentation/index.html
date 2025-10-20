@@ -1,0 +1,511 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head lang="en">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Liquid Sort Documentation</title>
+	<!-- Framework CSS -->
+	<link rel="stylesheet" href="assets/blueprint-css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="assets/blueprint-css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]><link rel="stylesheet" href="assets/blueprint-css/ie.css" type="text/css" media="screen, projection"><![endif]-->
+	<link rel="stylesheet" href="assets/blueprint-css/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
+	<style type="text/css" media="screen">
+		p, table, hr, .box { margin-bottom:25px; }
+		.box p { margin-bottom:10px; }
+	</style>
+    <link rel="stylesheet" href="assets/blueprint-css/prettify.css">
+	<script src="assets/js/prettify.js" defer></script>
+    <script>
+	window.onload = (function(){ prettyPrint(); });
+	</script>
+</head>
+
+
+<body>
+	<div class="container">
+	
+		<h3 class="center alt">&ldquo;Liquid Sort&rdquo; Documentation by &ldquo;demonisblack&rdquo; v1.0</h3>
+		
+		<hr>
+		
+		<h1 class="center">&ldquo;Liquid Sort&rdquo;</h1>
+		
+		<div class="borderTop">
+			<div class="span-6 colborder info prepend-1">
+				<p class="prepend-top">
+					<strong>
+					Created: 12/14/2022<br>
+					By: demonisblack<br>
+					Email: <a href="mailto:demonisblack@gmail.com">demonisblack@gmail.com</a>
+					</strong>
+				</p>
+			</div><!-- end div .span-6 -->		
+	
+			<div class="span-12 last">
+				<p class="prepend-top append-0">Thank you for purchasing the game. If you have any questions that are beyond the scope of this help file, please feel free to email via profile page contact form <a href="https://codecanyon.net/user/demonisblack">here</a>. Thanks so much!</p>
+			</div>
+		</div><!-- end div .borderTop -->
+		
+		<hr>
+		
+		<h2 id="toc" class="alt">Table of Contents</h2>
+		<ol class="alpha">
+        	<li><a href="#introduction">Introduction</a></li>
+            <li><a href="#gettingStarted">Getting Started</a></li>
+            <li><a href="#htmlStructure">HTML Structure</a></li>
+			<li><a href="#cssFiles">CSS Files and Structure</a></li>
+			<li><a href="#javascript">JavaScript</a></li>
+            <li><a href="#gameFunctions">Game Functions</a></li>
+            <li><a href="#gameAssets">Game Assets</a></li>
+            <li><a href="#buildinEditorTool">Build-In Editor Tool</a></li>
+            <li><a href="#compatibility">Compatibility</a></li>
+			<li><a href="#credits">Sources and Credits</a></li>
+            <li><a href="#changelog">Changelog</a></li>
+            <li><a href="#support">Support Policy</a></li>
+		</ol>
+		
+		<hr>
+        
+        <h3 id="introduction"><strong>A) Introduction</strong> - <a href="#toc">top</a></h3>
+        <p>Liquid Sort is a HTML5 game where you have to sort the colored water in the glasses until all colors in the same glass.</p>
+        
+        <p>The ZIP package contains the game with 1280×768 and 768×1024 resolution that scales proportionally to fit current screen device.</p>
+        <img src="assets/images/feature1.jpg" /><br>
+        <img src="assets/images/feature2.jpg" />
+
+        <hr>
+        
+        <h3 id="gettingStarted"><strong>B) Getting Started</strong> - <a href="#toc">top</a></h3>
+		<p>To install the game just upload folder 'game' to your server. The game won't run locally with some browser like Chrome due to some security mode.</p>        
+        <p>You need a website that runs PHP to make facebook share button work, and make sure to change Facebook Open Graph meta and Twitter meta in index.html, just replace [GAME_URL] to your game URL.</p>
+        <pre class="prettyprint linenums">
+        &lt;!-- for Facebook --&gt;
+        &lt;meta property=&quot;og:image&quot; content=&quot;[GAME_URL]/share.jpg&quot; /&gt;
+        &lt;meta property=&quot;og:url&quot; content=&quot;[GAME_URL]&quot; /&gt;
+        
+        &lt;!-- for Twitter --&gt;
+        &lt;meta name=&quot;twitter:image&quot; content=&quot;[GAME_URL]/share.jpg&quot; /&gt;
+        </pre>
+        
+        <p>You can easily customize game text and settings in game.js file
+        <pre class="prettyprint linenums">
+var bubbles_arr = [
+    "assets/bubble_01.png",
+    "assets/bubble_02.png",
+    "assets/bubble_03.png",
+    "assets/bubble_04.png",
+    "assets/bubble_05.png",
+];
+
+var colors_arr = [
+    {fill:"#07E021", surface:"#64FF76"},
+    {fill:"#8D06C6", surface:"#9A29D6"},
+    {fill:"#B51D1D", surface:"#DD4545"},
+    {fill:"#E27C03", surface:"#F5AA1B"},
+    {fill:"#203DE5", surface:"#4363ED"},
+    {fill:"#0EC1C1", surface:"#20DEE2"},
+    {fill:"#0ABF71", surface:"#27D894"},
+    {fill:"#DD0AA6", surface:"#EF2EC6"},
+    {fill:"#B5B5B5", surface:"#D6D6D6"},
+    {fill:"#333333", surface:"#545454"},
+    {fill:"#CCBE06", surface:"#EDE14C"},
+    {fill:"#CC50A9", surface:"#E073C7"},
+];
+
+//game settings
+var gameSettings = {
+    timer:{
+        color:"#fff",
+        width:400,
+        height:5,
+        radius:3
+    },
+    score:30,
+    moveSpeed:.2,
+    fillSpeed:1,
+}
+
+//game text display
+var textDisplay = {
+                    selectTube:"SELECT TUBE",
+                    selectLevel:"SELECT LEVEL",
+                    level:"LVL[NUMBER]",
+                    clear:"LVL[NUMBER] CLEAR",
+                    score:"[NUMBER]PTS",
+                    timesup:"TIME\'S UP!",
+                    exitTitle:'EXIT GAME',
+                    exitMessage:'ARE YOU SURE\nYOU WANT TO\nQUIT THE GAME?',
+                    share:'SHARE YOUR SCORE',
+                    resultTitle:'GAME OVER',
+                    resultLevelTitle:'LEVEL [NUMBER]',
+                    resultDesc:'[NUMBER]PTS'
+                }
+
+//Social share, [SCORE] will replace with game score
+var shareEnable = true; //toggle share
+var shareTitle = 'Highscore on Liquid Sort is [SCORE]PTS';//social share score title
+var shareMessage = '[SCORE]PTS is mine new highscore on Liquid Sort Game game! Try it now!'; //social share score message
+        </pre>
+        </p>
+
+        <p><strong>tubes_arr</strong> array load all the tubes, below is the explanation of each most important <strong>tubes_arr</strong> array item:</p>
+	
+		<pre class="prettyprint linenums">
+var tubes_arr = [
+    {
+        imageBack:"assets/tube_back_01.png",
+        imageFront:"assets/tube_front_01.png",
+        regX:44,
+        regY:310,
+        fillW:50,
+        fillH:250,
+        tubeW:86,
+        tubeH:300,
+        perspective:true,
+        shape:[
+            {x:-25, y:-277},
+            {x:-25, y:-141},
+            {x:-25, y:-22},
+            {x:-19, y:1},
+            {x:1, y:0},
+            {x:18, y:0},
+            {x:25, y:-22},
+            {x:25, y:-132},
+            {x:25, y:-276},
+            {x:1, y:-271},
+            {x:-25, y:-277},
+            ],
+    },
+]
+        </pre>
+	
+		<ol>
+            <li><strong>imageBack</strong> - back image files</li>
+            <li><strong>imageFront</strong> - front image files</li>
+            <li><strong>regX</strong> - center of image position x</li>
+            <li><strong>regY</strong> - center of image position y</li>
+            <li><strong>fillW</strong> - liquid fill width</li>
+            <li><strong>fillH</strong> - liquid fill height</li>
+            <li><strong>tubeW</strong> - tube width</li>
+            <li><strong>tubeH</strong> - tube height</li>
+            <li><strong>perspective</strong> - water in perspective (true/false)</li>
+            <li><strong>shape</strong> - array of masking path</li>
+        </ol>
+
+        <p><strong>levelSettings</strong> array load all the levels in levels.js, below is the explanation of each most important <strong>levelSettings</strong> array item:</p>
+	
+		<pre class="prettyprint linenums">
+var levelSettings = [
+    {
+        timer:60000,
+        score:500,
+        tubes:3,
+        empty:1,
+        levels:4,
+        column:3,
+        marginX:40,
+        marginY:50,
+        portrait:{
+            column:3,
+            marginX:40,
+            marginY:50,
+        }
+    }
+]
+        </pre>
+	
+		<ol>
+            <li><strong>timer</strong> - level timer</li>
+            <li><strong>score</strong> - level score</li>
+            <li><strong>tubes</strong> - total tubes</li>
+            <li><strong>empty</strong> - total empty tubes</li>
+            <li><strong>levels</strong> - total levels to fill coloured water</li>
+            <li><strong>column</strong> - total column layout</li>
+            <li><strong>marginX</strong> - margin x between tubes</li>
+            <li><strong>marginY</strong> - margin y between tubes</li>
+            <li><strong>portrait</strong> - layout property for portrait</li>
+        </ol>
+        
+        <p>
+        The sound can be easily disabled to avoid compatibility issues in sound.js file:
+        <pre class="prettyprint linenums">
+        var enableMobileSound = true;
+        </pre>
+        </p>
+
+        <p>If you wish to customize the tubes with build-in tool, check out <a href="#buildinEditorTool">Build-In Editor Tool</a> section.</p>
+
+        <hr>
+		
+		<h3 id="htmlStructure"><strong>C) HTML Structure</strong> - <a href="#toc">top</a></h3>
+        <p>The page start with the loader wrapper that covering the whole screen in the body. It shows loader progress when calls the function <strong>initPreload()</strong></p>
+        <pre class="prettyprint linenums">
+        &lt;!-- PERCENT LOADER START--&gt;
+    	&#x3C;div id=&#x22;mainLoader&#x22;&#x3E;&#x3C;img src=&#x22;assets/loader.png&#x22; /&#x3E;&#x3C;br&#x3E;&#x3C;span&#x3E;0&#x3C;/span&#x3E;&#x3C;/div&#x3E;
+        &lt;!-- PERCENT LOADER END--&gt;
+        </pre>
+        
+        <p>This section is for browser not support page when calls the function <strong>checkBrowser()</strong>. It shows error message when detect the browser does not support canvas.</p>
+        <pre class="prettyprint linenums">
+        &lt;!-- BROWSER NOT SUPPORT START--&gt;
+        &lt;div id=&quot;notSupportHolder&quot;&gt;
+            &lt;div class=&quot;notSupport&quot;&gt;YOUR BROWSER ISN&#39;T SUPPORTED.&lt;br/&gt;PLEASE UPDATE YOUR BROWSER IN ORDER TO RUN THE GAME&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;!-- BROWSER NOT SUPPORT END--&gt;
+        </pre>
+        
+        <p>Follow by one canvas tag in the body. The game start initiatie by calls the main function of the game <strong>initMain()</strong>.</p>
+        <pre class="prettyprint linenums">
+        &lt;!-- CANVAS START--&gt;
+        &lt;div id=&quot;canvasHolder&quot;&gt;
+            &lt;canvas id=&quot;gameCanvas&quot; width=&quot;1280&quot; height=&quot;768&quot;&gt;&lt;/canvas&gt;
+        &lt;/div&gt;
+        &lt;!-- CANVAS END--&gt;
+        </pre>
+		<hr>
+
+		<h3 id="cssFiles"><strong>D) CSS Files and Structure</strong> - <a href="#toc">top</a></h3>
+		<p>I'm using two CSS files in this game. The first one is a generic reset file. Many browser interpret the default behavior of html elements differently. By using a general reset CSS file, we can work round this. This file also contains some general styling, such as anchor tag colors, font-sizes, etc. Keep in mind, that these values might be overridden somewhere else in the file.</p>
+		<p>The second file contains all of the specific stylings for the page.</p>
+        <hr>
+		
+        
+		<h3 id="javascript"><strong>E) JavaScript</strong> - <a href="#toc">top</a></h3>
+		
+		<p>This game using Javascript files below.</p>
+		
+		<ol>
+			<li>
+                <strong>jQuery</strong> is a cross-platform JavaScript library designed to simplify the client-side scripting of HTML.<br/><br/>
+            </li>
+            
+            <li>
+                <strong>Detect Mobile Browser</strong> is a open source scripts to detect mobile browsers and phones.<br/><br/>
+            </li>
+            
+            <li>
+                <strong>CreateJs plugin</strong> is a suite of modular libraries and tools which work together to create interactive content on open web technologies via HTML5.<br/><br/>
+            </li>
+            
+            <li>
+                <strong>TweenMax</strong> is an extremely fast, lightweight, and flexible animation tool that serves as the foundation of the GreenSock Animation Platform (GSAP).<br/><br/>
+            </li>
+
+            <li>
+                <strong>Cookie</strong> is a simple, lightweight JavaScript API for handling cookies.<br/><br/>
+            </li>
+            
+            <li>
+                <strong>The game have the following js files</strong>
+                <ul>
+                    <li><strong>init.js :</strong> check if browser or device support <br/><br/></li>
+                    <li><strong>loader.js :</strong> loader to load all game images<br/><br/></li>
+                    <li><strong>main.js :</strong> initiate game setup and browser resize function<br/><br/></li>
+                    <li><strong>mobile.js :</strong> mobile orientation change<br/><br/></li>
+                    <li><strong>canvas.js :</strong> canvas setup and resize<br/><br/></li>
+                    <li><strong>sound.js :</strong> sound event<br/><br/></li>
+                    <li><strong>game.js :</strong> game play and logics<br/><br/></li>
+                    <li><strong>plugins.js :</strong> additonal useful plugins<br/><br/></li>
+                </ul>
+            </li>
+		</ol>
+        
+        <p>Complete game flow:</p>
+		<ol>
+        	<li>The index.html file start init.js for browser detection</li>
+            <li>If browser is supported, init loader.js to start load asserts with loading progress</li>
+            <li>For mobile the rotate instruction shows when device is in portrait view, detect by mobile.js</li>
+            <li>When all asserts contained in "/assets" folder are loaded, the game start construct canvas.js from main.js thats shows game menu</li>
+            <li>If user click Play button in game menu, the game will start with game.js</li>
+            <li>If user click on any two glasses, it will start fill with the coloured water</li>
+            <li>If user seperated all the liquids in the glasses into same color, the game will proceed to next level</li>
+            <li>When timer is run out, the game will end and over</li>
+            <li>If user click the main button in game result, it will back to main</li>
+        </ol>
+		
+		<hr>
+        
+        <h3 id="gameFunctions"><strong>F) Game Functions</strong> - <a href="#toc">top</a></h3>
+		
+		<p>The most important functions used for page.</p>
+        <ul>
+        	<li>
+                <strong>checkBrowser()</strong><br/>
+                This function is runs for browser detection<br/><br/>
+            </li>
+            
+            <li>
+                <strong>checkMobileEvent()</strong><br/>
+                This function runs for mobile event<br/><br/>
+            </li>
+        </ul>
+        
+        <p>The most important functions used for game.</p>
+        <ul>
+        	<li>
+                <strong>initMain()</strong><br/>
+                This function build canvas<br/><br/>
+            </li>
+            
+            <li>
+                <strong>startGame()</strong><br/>
+                This function start gameplay<br/><br/>
+            </li>
+            
+            <li>
+                <strong>stopGame()</strong><br/>
+                This function stop gameplay<br/><br/>
+            </li>
+
+            <li>
+                <strong>saveGame()</strong><br>
+                This function save game score<br><br>
+            </li>
+        </ul>
+		<hr>
+        
+        <h3 id="gameAssets"><strong>G) Game Assets</strong> - <a href="#toc">top</a></h3>
+        <p>The game contain 'design' folder which include following:
+        <ol>
+        	<li>liquidsort_1280x768.psd - with layer folders below
+                <ul>
+                <li>Option</li>
+                <li>Result</li>
+                <li>Gameplay</li>
+                <li>Landing</li>
+                </ul>
+        	</li>
+        </ol>
+        </p>
+
+        <p>The folder 'assets' in 'game' folder contains all the images of the game that can be replaced. Is better to have the same size of the old ones if you want to reskin the game graphic without coding.</p>
+		<hr>
+        
+
+        <h3 id="buildinEditorTool"><strong>H) Build-In Editor Tool</strong> - <a href="#toc">top</a></h3>
+        <p>This is the section where you can preview or edit the tubes with the tool by running <Strong>edit.html</Strong>. The page start with edit tools.<br/></p>
+        
+        <p>
+        <img src="assets/images/edit1.jpg" />
+        <ol>
+        	<li>Select the tube to edit, option to add, remove tube.</li>
+            <li>This section is to edit tube, and also output the new Array.
+            	<ul>
+                	<li>Edit Tube - edit tube settings</li>
+                    <li>Generate Array - click to generate array, copy and replace <strong>tubes_arr</strong> array in <strong>game.js</strong> for new update</li>
+                </ul>
+            </li>
+        </ol>
+        </p>
+        
+        <p>
+        <img src="assets/images/edit2.jpg" />
+        <ol>
+            <li>Edit tube:
+            	<ul>
+                	<li><strong>imageBack</strong> - back image files</li>
+                    <li><strong>imageFront</strong> - front image files</li>
+                    <li><strong>regX</strong> - center of image position x</li>
+                    <li><strong>regY</strong> - center of image position y</li>
+                    <li><strong>fillW</strong> - liquid fill width</li>
+                    <li><strong>fillH</strong> - liquid fill height</li>
+                    <li><strong>tubeW</strong> - tube width</li>
+                    <li><strong>tubeH</strong> - tube height</li>
+                    <li><strong>perspective</strong> - water in perspective (true/false)</li>
+                </ul>
+            </li>
+            <li>Edit water fill mask
+                <ul>
+                	<li>Doubleclick on stage to add new point</li>
+                    <li>Move the point on stage to adjust the masking shape</li>
+                    <li>Click remove point to remove selected point on stage</li>
+                </ul>
+            </li>
+            <li>Click update image to load new assets, click done to save and go back main options.</li>
+        </ol>
+        </p>
+        
+        <hr>
+
+        <h3 id="compatibility"><strong>I) Compatibility</strong> - <a href="#top">top</a></h3>
+		
+		<p>This game is build for Desktop browsers that support HTML5 canvas. Any mobile/tablet should work in landscape view, but they are not officially supported.</p>
+		<hr>
+		
+		<h3 id="credits"><strong>J) Sources and Credits</strong> - <a href="#toc">top</a></h3>
+		
+		<p>I've used the following font and sound files as listed.</p>
+		
+		<ul>
+			<li><a href="https://www.dafont.com/comicy.font" target="_blank">Comicy</a> from file Khurasan</li>
+			
+            <li><a href="https://freesound.org/people/nezuai/sounds/582609/" target="_blank">ui sound 8.wav</a> from file nezuai</li>
+            <li><a href="https://freesound.org/people/sophieciruela/sounds/634441/" target="_blank">Notification.wav</a> from file sophieciruela</li>
+            <li><a href="https://freesound.org/people/BeezleFM/sounds/512136/" target="_blank">Notification Sound</a> from file BeezleFM</li>
+            <li><a href="https://freesound.org/people/Ryanz-Official/sounds/646575/" target="_blank">Pop up</a> from file Ryanz-Official</li>
+            <li><a href="https://freesound.org/people/sleepyhead16/sounds/565907/" target="_blank">strange notification</a> from file sleepyhead16</li>
+            <li><a href="https://freesound.org/people/IENBA/sounds/545477/" target="_blank">Pop-up</a> from file IENBA</li>
+            <li><a href="https://freesound.org/people/carloschoconta/sounds/492108/" target="_blank">incline 5up.wav</a> from file carloschoconta</li>
+            <li><a href="https://freesound.org/people/carloschoconta/sounds/492107/" target="_blank">incline 2down.wav</a> from file carloschoconta</li>
+            <li><a href="https://freesound.org/people/carloschoconta/sounds/492106/" target="_blank">incline 2up.wav</a> from file carloschoconta</li>
+            <li><a href="https://freesound.org/people/Dvideoguy/sounds/207781/" target="_blank">Pouring Liquid.wav</a> from file Dvideoguy</li>
+            <li><a href="https://freesound.org/people/16HPanskaKanclirova_Victoria/sounds/497306/" target="_blank">15-1_Bottle_close_pouring.WAV</a> from file 16HPanskaKanclirova_Victoria</li>
+            <li><a href="https://freesound.org/people/Wenjun/sounds/555378/" target="_blank">Pouring Water Into A Cup.wav</a> from file Wenjun</li>
+            <li><a href="https://freesound.org/people/copyc4t/sounds/554089/" target="_blank">Echoed Blip</a> from file copyc4t</li>
+            <li><a href="https://freesound.org/people/pogmothoin/sounds/401722/" target="_blank">marimba do re mi fa so.WAV</a> from file pogmothoin</li>
+            <li><a href="https://freesound.org/people/original_sound/sounds/494978/" target="_blank">Atmospheric Notification 2.mp3</a> from file original_sound</li>
+            <li><a href="https://www.chosic.com/download-audio/37440/" target="_blank">Resolutions</a> from file Scott Buckley</li>
+		</ul>
+		
+		<hr>
+        
+        <!--<h3 id="changelog"><strong>K) Changelog</strong> - <a href="#toc">top</a></h3>
+
+        Version 1.1
+		<ul>
+			<li>Fixed canvas issue</li>
+		</ul>
+		<hr>-->
+		
+		<h3 id="support"><strong>L) Support Policy</strong> - <a href="#toc">top</a></h3>
+
+		<p>Check out support policy <a href="http://demonisblack.com/code/support-policy/">here</a>.</p>
+
+        <strong>Wordpress Site</strong><br/>
+        <p>
+            By using Scoreboard for HTML5 Games plugin, you can embed HTML5 game into WordPress post or page.<br>
+            <a href="https://wordpress.org/plugins/scoreboard-for-html5-game-lite/" target="_blank">> Plugin</a>
+        </p>
+
+        <strong>Ad Placeholder</strong><br/>
+        <p>
+            Help simulate ads on HTML5 Games, you can integrate and display static and takeover ads through different Ads Serving Platform.<br>
+            <a href="https://demonisblack.com/code/ads/" target="_blank">> Documentation</a>
+        </p>
+
+        <strong>Instant Games – Facebook</strong><br/>
+        <p>
+            Guide you through integrating Facebook Instant Games API in our HTML5 Games.<br>
+            <a href="https://demonisblack.com/code/instantgames/" target="_blank">> Documentation</a>
+        </p>
+		<hr>
+		
+		<p>Once again, thank you so much for purchasing this game, if you have a more general question relating to the games on CodeCanyon, you might consider visiting the item page in the <a href="https://codecanyon.net/item/change-word-html5-game/41800639">"Support"</a> section.</p>
+		<p>If you like the game, please take a moment to rate it. Thanks!   <img src="assets/images/rate.png" /><img src="assets/images/rate.png" /><img src="assets/images/rate.png" /><img src="assets/images/rate.png" /><img src="assets/images/rate.png" /></p>
+        
+        <p>
+        	<h3>How to rate an item on CodeCanyon?</h3>
+            If you want to rate one of our items on CodeCanyon please do it like this:
+            <ol>
+                <li>Login to CodeCanyon</li>
+                <li>Open the menu on the top right, and click onto the link “Downloads” which shows a list of your downloads</li>
+                <li>Rate our items using the stars</li>
+                <li>That’s it. Thank you very much!</li>
+            </ol>
+        </p>
+		
+		<p class="append-bottom alt large"><strong>demonisblack</strong></p>
+		<p><a href="#toc">Go To Table of Contents</a></p>
+		
+		<hr class="space">
+	</div><!-- end div .container -->
+</body>
+</html>

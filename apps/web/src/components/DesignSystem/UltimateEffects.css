@@ -1,0 +1,484 @@
+/* Ultimate Design System Effects */
+
+/* Advanced 3D Card Effects */
+.card-3d-ultimate {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 0.3s ease;
+}
+
+.card-3d-ultimate:hover {
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 60px rgba(147, 51, 234, 0.3);
+  transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+}
+
+/* Liquid Morphing Background */
+.liquid-bg {
+  background: linear-gradient(
+    -45deg,
+    #ee7752,
+    #e73c7e,
+    #23a6d5,
+    #23d5ab,
+    #8b5cf6
+  );
+  background-size: 400% 400%;
+  animation: liquid-morph 20s ease infinite;
+}
+
+@keyframes liquid-morph {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Cyber Grid Background */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(147, 51, 234, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(147, 51, 234, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+}
+
+@keyframes grid-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
+  }
+}
+
+/* Matrix Rain Effect */
+.matrix-rain {
+  position: relative;
+  overflow: hidden;
+}
+
+.matrix-rain::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
+  background-size: 100% 4px;
+  animation: matrix-fall 2s linear infinite;
+}
+
+@keyframes matrix-fall {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Holographic Glitch Effect */
+.glitch-text {
+  position: relative;
+  font-weight: bold;
+  color: #fff;
+}
+
+.glitch-text::before,
+.glitch-text::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  content: attr(data-text);
+}
+
+.glitch-text::before {
+  z-index: -1;
+  color: #ff0000;
+  animation: glitch-1 0.5s infinite;
+}
+
+.glitch-text::after {
+  z-index: -2;
+  color: #00ff00;
+  animation: glitch-2 0.5s infinite;
+}
+
+@keyframes glitch-1 {
+  0%,
+  14%,
+  15%,
+  49%,
+  50%,
+  99%,
+  100% {
+    transform: translate(0);
+  }
+  15%,
+  49% {
+    transform: translate(-2px, -2px);
+  }
+}
+
+@keyframes glitch-2 {
+  0%,
+  20%,
+  21%,
+  62%,
+  63%,
+  99%,
+  100% {
+    transform: translate(0);
+  }
+  21%,
+  62% {
+    transform: translate(2px, 2px);
+  }
+}
+
+/* Energy Orb */
+.energy-orb {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    rgba(147, 51, 234, 0.8) 0%,
+    rgba(236, 72, 153, 0.4) 50%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: energy-pulse 3s ease-in-out infinite;
+}
+
+.energy-orb::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  content: "";
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: energy-core 1s ease-in-out infinite alternate;
+}
+
+@keyframes energy-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px rgba(147, 51, 234, 0.8);
+  }
+}
+
+@keyframes energy-core {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+/* Digital Scan Lines */
+.scan-lines {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-lines::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  content: "";
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 0, 0.03) 2px,
+    rgba(0, 255, 0, 0.03) 4px
+  );
+  animation: scan-move 0.1s linear infinite;
+}
+
+@keyframes scan-move {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+/* Quantum Particles */
+.quantum-particles {
+  position: relative;
+}
+
+.quantum-particles::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  content: "";
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, rgba(147, 51, 234, 0.5), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(236, 72, 153, 0.5), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(6, 182, 212, 0.5), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(16, 185, 129, 0.5), transparent);
+  background-repeat: repeat;
+  background-size: 150px 100px;
+  animation: quantum-drift 20s linear infinite;
+}
+
+@keyframes quantum-drift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-150px, -100px);
+  }
+}
+
+/* Neural Network Lines */
+.neural-network {
+  position: relative;
+}
+
+.neural-network::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(
+      45deg,
+      transparent 48%,
+      rgba(147, 51, 234, 0.1) 49%,
+      rgba(147, 51, 234, 0.1) 51%,
+      transparent 52%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 48%,
+      rgba(236, 72, 153, 0.1) 49%,
+      rgba(236, 72, 153, 0.1) 51%,
+      transparent 52%
+    );
+  background-size: 20px 20px;
+  animation: neural-pulse 3s ease-in-out infinite;
+}
+
+@keyframes neural-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Aurora Effect */
+.aurora-bg {
+  background: linear-gradient(
+    45deg,
+    rgba(147, 51, 234, 0.1) 0%,
+    rgba(236, 72, 153, 0.1) 25%,
+    rgba(6, 182, 212, 0.1) 50%,
+    rgba(16, 185, 129, 0.1) 75%,
+    rgba(245, 158, 11, 0.1) 100%
+  );
+  background-size: 400% 400%;
+  animation: aurora-wave 15s ease infinite;
+}
+
+@keyframes aurora-wave {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Cyberpunk Glow */
+.cyber-glow {
+  box-shadow:
+    0 0 5px rgba(0, 255, 255, 0.5),
+    0 0 10px rgba(0, 255, 255, 0.3),
+    0 0 15px rgba(0, 255, 255, 0.2),
+    inset 0 0 5px rgba(0, 255, 255, 0.1);
+  animation: cyber-flicker 2s infinite alternate;
+}
+
+@keyframes cyber-flicker {
+  0% {
+    box-shadow:
+      0 0 5px rgba(0, 255, 255, 0.5),
+      0 0 10px rgba(0, 255, 255, 0.3),
+      0 0 15px rgba(0, 255, 255, 0.2),
+      inset 0 0 5px rgba(0, 255, 255, 0.1);
+  }
+  100% {
+    box-shadow:
+      0 0 8px rgba(0, 255, 255, 0.8),
+      0 0 15px rgba(0, 255, 255, 0.5),
+      0 0 25px rgba(0, 255, 255, 0.3),
+      inset 0 0 8px rgba(0, 255, 255, 0.2);
+  }
+}
+
+/* Floating Elements with Physics */
+.physics-float {
+  animation: physics-bounce 4s ease-in-out infinite;
+}
+
+@keyframes physics-bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Magnetic Hover Effect */
+.magnetic-hover {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.magnetic-hover:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05) rotate(1deg);
+}
+
+/* Liquid Button */
+.liquid-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(45deg, #8b5cf6, #ec4899);
+  transition: all 0.3s ease;
+}
+
+.liquid-button::before {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  content: "";
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.liquid-button:hover::before {
+  left: 100%;
+}
+
+.liquid-button:hover {
+  box-shadow: 0 10px 25px rgba(147, 51, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Retro CRT Effect */
+.crt-effect {
+  position: relative;
+  background: #000;
+}
+
+.crt-effect::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.02) 50%);
+  background-size: 100% 4px;
+  animation: crt-flicker 0.15s linear infinite;
+}
+
+@keyframes crt-flicker {
+  0% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 1;
+  }
+  99% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Performance Optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-bg,
+  .cyber-grid,
+  .matrix-rain::before,
+  .glitch-text::before,
+  .glitch-text::after,
+  .energy-orb,
+  .scan-lines::before,
+  .quantum-particles::before,
+  .neural-network::before,
+  .aurora-bg,
+  .cyber-glow,
+  .physics-float,
+  .crt-effect::before {
+    animation: none;
+  }
+
+  .magnetic-hover:hover {
+    filter: none;
+    transform: none;
+  }
+}

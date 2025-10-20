@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Test - 0xArena</title>
+    <style>
+      :root {
+        --primary-color: #4a6cf7;
+        --secondary-color: #5f2eea;
+        --text-color: #212b36;
+        --light-bg: #f3f4f6;
+        --dark-bg: #1e293b;
+        --success-color: #10b981;
+        --warning-color: #f97316;
+        --danger-color: #ef4444;
+        --border-color: #e2e8f0;
+        --input-bg: #f9fafb;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--light-bg);
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 1rem 0;
+        text-align: center;
+        margin-bottom: 2rem;
+        border-radius: 0.5rem;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin-top: 0;
+        font-weight: 600;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .controls {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.25rem;
+        background-color: var(--input-bg);
+        font-size: 1rem;
+      }
+
+      button {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: var(--secondary-color);
+      }
+
+      .button-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 1rem;
+      }
+
+      .tab {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+      }
+
+      .tab.active {
+        border-bottom: 2px solid var(--primary-color);
+        font-weight: 500;
+      }
+
+      pre {
+        background-color: var(--dark-bg);
+        color: white;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .badge-success {
+        background-color: var(--success-color);
+        color: white;
+      }
+
+      .badge-warning {
+        background-color: var(--warning-color);
+        color: white;
+      }
+
+      .badge-danger {
+        background-color: var(--danger-color);
+        color: white;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .table th {
+        background-color: var(--light-bg);
+      }
+
+      .loader {
+        display: none;
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 3px solid var(--primary-color);
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .response-container {
+        margin-top: 1.5rem;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      #response-raw,
+      #response-formatted {
+        margin-top: 1rem;
+      }
+
+      .info-item {
+        display: flex;
+        margin-bottom: 0.5rem;
+      }
+
+      .info-label {
+        font-weight: 500;
+        min-width: 150px;
+      }
+
+      .info-value {
+        flex: 1;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .panel-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .panel-badge {
+        margin-left: 0.5rem;
+      }
+
+      .copyable {
+        position: relative;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+      }
+
+      .copy-btn:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <h1>0xArena API Tester</h1>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <h2>API Request</h2>
+
+        <div class="controls">
+          <div class="form-group">
+            <label for="api-url">API URL</label>
+            <input
+              type="text"
+              id="api-url"
+              value="https://zeroxarenabackend.onrender.com/index.php"
+              placeholder="Enter API URL"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="request-method">Method</label>
+            <select id="request-method">
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="OPTIONS">OPTIONS</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="post-data-container" class="hidden">
+          <label for="post-data">POST Data (JSON)</label>
+          <textarea
+            id="post-data"
+            rows="5"
+            style="
+              width: 100%;
+              padding: 0.75rem;
+              border: 1px solid var(--border-color);
+              border-radius: 0.25rem;
+            "
+            placeholder='{"key": "value"}'
+          ></textarea>
+        </div>
+
+        <div class="button-group">
+          <button id="send-request">Send Request</button>
+          <div class="loader" id="loader"></div>
+        </div>
+      </div>
+
+      <div class="response-container hidden" id="response-container">
+        <div class="card">
+          <div class="panel-heading">
+            <h2>Response</h2>
+            <div>
+              <span id="status-badge" class="badge"></span>
+              <span id="time-badge" class="badge badge-success"></span>
+            </div>
+          </div>
+
+          <div class="tabs">
+            <div class="tab active" data-tab="formatted">Formatted</div>
+            <div class="tab" data-tab="raw">Raw</div>
+          </div>
+
+          <div id="response-formatted">
+            <div class="grid">
+              <div class="card">
+                <h3>Request Info</h3>
+                <div id="request-info"></div>
+              </div>
+
+              <div class="card">
+                <h3>Server Info</h3>
+                <div id="server-info"></div>
+              </div>
+            </div>
+
+            <div class="card" id="config-status-container">
+              <h3>Config Status</h3>
+              <div id="config-status"></div>
+            </div>
+
+            <div class="card">
+              <h3>Headers</h3>
+              <div id="headers-container">
+                <table class="table" id="headers-table">
+                  <thead>
+                    <tr>
+                      <th>Header</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Parameters</h3>
+              <div class="tabs">
+                <div class="tab active" data-tab="get-params">GET</div>
+                <div class="tab" data-tab="post-params">POST</div>
+              </div>
+
+              <div id="get-params">
+                <table class="table" id="get-params-table">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+
+              <div id="post-params" class="hidden">
+                <table class="table" id="post-params-table">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="response-raw" class="hidden">
+            <div class="copyable">
+              <pre id="raw-response"></pre>
+              <button class="copy-btn" id="copy-json">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elements
+        const requestMethodSelect = document.getElementById("request-method");
+        const postDataContainer = document.getElementById(
+          "post-data-container"
+        );
+        const sendRequestBtn = document.getElementById("send-request");
+        const loader = document.getElementById("loader");
+        const responseContainer = document.getElementById("response-container");
+        const statusBadge = document.getElementById("status-badge");
+        const timeBadge = document.getElementById("time-badge");
+        const rawResponse = document.getElementById("raw-response");
+        const copyBtn = document.getElementById("copy-json");
+
+        // Show/hide POST data textarea based on selected method
+        requestMethodSelect.addEventListener("change", function () {
+          if (this.value === "POST") {
+            postDataContainer.classList.remove("hidden");
+          } else {
+            postDataContainer.classList.add("hidden");
+          }
+        });
+
+        // Tab switching
+        document.querySelectorAll(".tabs .tab").forEach((tab) => {
+          tab.addEventListener("click", function () {
+            const tabsContainer = this.closest(".tabs");
+            tabsContainer
+              .querySelectorAll(".tab")
+              .forEach((t) => t.classList.remove("active"));
+            this.classList.add("active");
+
+            const tabName = this.getAttribute("data-tab");
+
+            // Handle different tab containers
+            if (tabName === "formatted" || tabName === "raw") {
+              document
+                .getElementById("response-formatted")
+                .classList.toggle("hidden", tabName !== "formatted");
+              document
+                .getElementById("response-raw")
+                .classList.toggle("hidden", tabName !== "raw");
+            } else if (tabName === "get-params" || tabName === "post-params") {
+              document
+                .getElementById("get-params")
+                .classList.toggle("hidden", tabName !== "get-params");
+              document
+                .getElementById("post-params")
+                .classList.toggle("hidden", tabName !== "post-params");
+            }
+          });
+        });
+
+        // Send API request
+        sendRequestBtn.addEventListener("click", function () {
+          const apiUrl = document.getElementById("api-url").value;
+          const requestMethod = requestMethodSelect.value;
+          const postData = document.getElementById("post-data").value;
+
+          // Validate URL
+          if (!apiUrl) {
+            alert("Please enter an API URL");
+            return;
+          }
+
+          // Show loader and disable button
+          loader.style.display = "block";
+          sendRequestBtn.disabled = true;
+          responseContainer.classList.add("hidden");
+
+          // Record start time
+          const startTime = new Date();
+
+          // Create fetch options
+          const options = {
+            method: requestMethod,
+            headers: {
+              Accept: "application/json",
+            },
+          };
+
+          // Add body for POST requests
+          if (requestMethod === "POST" && postData) {
+            try {
+              const jsonData = JSON.parse(postData);
+              options.headers["Content-Type"] = "application/json";
+              options.body = JSON.stringify(jsonData);
+            } catch (error) {
+              alert("Invalid JSON data");
+              loader.style.display = "none";
+              sendRequestBtn.disabled = false;
+              return;
+            }
+          }
+
+          // Make the API request
+          fetch(apiUrl, options)
+            .then((response) => {
+              const endTime = new Date();
+              const responseTime = endTime - startTime;
+
+              // Update time badge
+              timeBadge.textContent = `${responseTime}ms`;
+
+              // Update status badge
+              statusBadge.textContent = `${response.status} ${response.statusText}`;
+              if (response.ok) {
+                statusBadge.className = "badge badge-success";
+              } else {
+                statusBadge.className = "badge badge-danger";
+              }
+
+              return response.json();
+            })
+            .then((data) => {
+              // Format and display response
+              displayResponse(data);
+
+              // Show response container
+              responseContainer.classList.remove("hidden");
+            })
+            .catch((error) => {
+              rawResponse.textContent = `Error: ${error.message}`;
+              statusBadge.textContent = "Error";
+              statusBadge.className = "badge badge-danger";
+
+              // Show response container with raw tab active
+              responseContainer.classList.remove("hidden");
+              document.querySelector('.tab[data-tab="raw"]').click();
+            })
+            .finally(() => {
+              // Hide loader and enable button
+              loader.style.display = "none";
+              sendRequestBtn.disabled = false;
+            });
+        });
+
+        // Copy JSON response
+        copyBtn.addEventListener("click", function () {
+          const textToCopy = rawResponse.textContent;
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            this.textContent = "Copied!";
+            setTimeout(() => {
+              this.textContent = "Copy";
+            }, 2000);
+          });
+        });
+
+        // Function to format and display response
+        function displayResponse(data) {
+          // Display raw JSON
+          rawResponse.textContent = JSON.stringify(data, null, 2);
+
+          // Clear all tables and containers
+          document.querySelector("#request-info").innerHTML = "";
+          document.querySelector("#server-info").innerHTML = "";
+          document.querySelector("#config-status").innerHTML = "";
+          document.querySelector("#headers-table tbody").innerHTML = "";
+          document.querySelector("#get-params-table tbody").innerHTML = "";
+          document.querySelector("#post-params-table tbody").innerHTML = "";
+
+          // Request Info
+          if (data.request) {
+            const requestInfo = document.querySelector("#request-info");
+            appendInfoItem(requestInfo, "Method", data.request.method);
+            appendInfoItem(requestInfo, "URI", data.request.uri);
+            appendInfoItem(requestInfo, "Host", data.request.host);
+            appendInfoItem(requestInfo, "Origin", data.request.origin);
+            appendInfoItem(requestInfo, "Referer", data.request.referer);
+            appendInfoItem(requestInfo, "User Agent", data.request.user_agent);
+            appendInfoItem(
+              requestInfo,
+              "Remote Addr",
+              data.request.remote_addr
+            );
+
+            if (data.request.detected_origin) {
+              appendInfoItem(
+                requestInfo,
+                "Detected Origin",
+                data.request.detected_origin
+              );
+            }
+          }
+
+          // Server Info
+          if (data.server) {
+            const serverInfo = document.querySelector("#server-info");
+            appendInfoItem(serverInfo, "PHP Version", data.server.php_version);
+            appendInfoItem(
+              serverInfo,
+              "Server Software",
+              data.server.server_software
+            );
+            appendInfoItem(
+              serverInfo,
+              "Document Root",
+              data.server.document_root
+            );
+            appendInfoItem(
+              serverInfo,
+              "Request Time",
+              data.server.request_time
+            );
+            appendInfoItem(
+              serverInfo,
+              "Current Directory",
+              data.server.current_directory
+            );
+          }
+
+          // Config Status
+          if (data.config_status) {
+            const configStatus = document.querySelector("#config-status");
+
+            // Config loaded status
+            const loadedStatus = data.config_status.loaded
+              ? '<span class="badge badge-success">Loaded</span>'
+              : '<span class="badge badge-danger">Not Loaded</span>';
+            appendInfoItem(configStatus, "Config Loaded", loadedStatus);
+
+            // Database connection
+            if (data.config_status.database_connection) {
+              const dbStatus =
+                data.config_status.database_connection === "Success"
+                  ? '<span class="badge badge-success">Connected</span>'
+                  : `<span class="badge badge-danger">Failed</span> <span class="info-value">${data.config_status.database_connection.replace(
+                      "Failed: ",
+                      ""
+                    )}</span>`;
+              appendInfoItem(configStatus, "Database", dbStatus);
+            }
+
+            // Functions
+            if (data.config_status.functions) {
+              configStatus.appendChild(document.createElement("hr"));
+              const functionsHeading = document.createElement("h4");
+              functionsHeading.textContent = "Available Functions";
+              configStatus.appendChild(functionsHeading);
+
+              const functionsList = document.createElement("div");
+              functionsList.style.display = "grid";
+              functionsList.style.gridTemplateColumns =
+                "repeat(auto-fill, minmax(150px, 1fr))";
+              functionsList.style.gap = "0.5rem";
+
+              for (const [func, exists] of Object.entries(
+                data.config_status.functions
+              )) {
+                const functionItem = document.createElement("div");
+                const badge = exists
+                  ? '<span class="badge badge-success">✓</span>'
+                  : '<span class="badge badge-danger">✗</span>';
+                functionItem.innerHTML = `${badge} ${func}`;
+                functionsList.appendChild(functionItem);
+              }
+
+              configStatus.appendChild(functionsList);
+            }
+          } else {
+            // Hide config status container if not available
+            document
+              .getElementById("config-status-container")
+              .classList.add("hidden");
+          }
+
+          // Headers
+          if (data.headers && Object.keys(data.headers).length > 0) {
+            const headersTable = document.querySelector("#headers-table tbody");
+            for (const [header, value] of Object.entries(data.headers)) {
+              appendTableRow(headersTable, header, value);
+            }
+          }
+
+          // GET Parameters
+          if (data.get_params && Object.keys(data.get_params).length > 0) {
+            const getParamsTable = document.querySelector(
+              "#get-params-table tbody"
+            );
+            for (const [param, value] of Object.entries(data.get_params)) {
+              appendTableRow(getParamsTable, param, value);
+            }
+          } else {
+            appendTableRow(
+              document.querySelector("#get-params-table tbody"),
+              "",
+              "No GET parameters"
+            );
+          }
+
+          // POST Parameters
+          if (data.post_params && Object.keys(data.post_params).length > 0) {
+            const postParamsTable = document.querySelector(
+              "#post-params-table tbody"
+            );
+            for (const [param, value] of Object.entries(data.post_params)) {
+              appendTableRow(postParamsTable, param, formatValue(value));
+            }
+          } else {
+            appendTableRow(
+              document.querySelector("#post-params-table tbody"),
+              "",
+              "No POST parameters"
+            );
+          }
+        }
+
+        // Helper function to append info item
+        function appendInfoItem(container, label, value) {
+          const infoItem = document.createElement("div");
+          infoItem.className = "info-item";
+
+          const infoLabel = document.createElement("div");
+          infoLabel.className = "info-label";
+          infoLabel.textContent = label + ":";
+
+          const infoValue = document.createElement("div");
+          infoValue.className = "info-value";
+
+          // Handle HTML content
+          if (typeof value === "string" && value.includes("<span")) {
+            infoValue.innerHTML = value;
+          } else {
+            infoValue.textContent = value;
+          }
+
+          infoItem.appendChild(infoLabel);
+          infoItem.appendChild(infoValue);
+          container.appendChild(infoItem);
+        }
+
+        // Helper function to append table row
+        function appendTableRow(tableBody, key, value) {
+          const row = document.createElement("tr");
+
+          const keyCell = document.createElement("td");
+          keyCell.textContent = key;
+
+          const valueCell = document.createElement("td");
+
+          // Handle complex values
+          if (typeof value === "object" && value !== null) {
+            valueCell.innerHTML = `<pre>${JSON.stringify(
+              value,
+              null,
+              2
+            )}</pre>`;
+          } else {
+            valueCell.textContent = value;
+          }
+
+          row.appendChild(keyCell);
+          row.appendChild(valueCell);
+          tableBody.appendChild(row);
+        }
+
+        // Helper function to format values for display
+        function formatValue(value) {
+          if (typeof value === "object" && value !== null) {
+            return JSON.stringify(value);
+          }
+          return value;
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/test/**",
+    "src/components/Admin/**",
+    "src/components/GameHub/PerformanceGameList.test.tsx"
+  ]
+}

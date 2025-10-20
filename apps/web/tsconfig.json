@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "webworker"],
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "extends": "@hey/config/react.tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.mjs"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/test/**",
+    "src/components/Admin/**"
+  ]
+}
